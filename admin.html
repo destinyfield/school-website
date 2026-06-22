@@ -1,137 +1,943 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal - Destinyfield</title>
-  <link rel="icon" type="image/jpeg" href="img/logo.jpeg" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/admin.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Destinyfield Site Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+:root{
+  --navy:#0A1628; --navy-mid:#112240; --navy-light:#1C3461;
+  --gold:#C9A84C; --gold-light:#E8C96A; --gold-pale:rgba(201,168,76,.13);
+  --ivory:#F8F4ED; --ivory-dark:#EDE8DF; --teal:#1B6B6B;
+  --white:#fff; --text-dark:#0A1628; --text-mid:#3A4A6B; --text-light:#7A8BAA;
+  --ok:#1B6B6B; --warn:#B3501E; --err:#B3261E;
+  --r-sm:8px; --r-md:14px; --r-lg:20px;
+  --shadow:0 8px 28px rgba(10,22,40,.10);
+  --ff-d:'Playfair Display',Georgia,serif; --ff-b:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--ff-b);background:var(--ivory);color:var(--text-dark);line-height:1.6;}
+img{max-width:100%;display:block;}
+button{cursor:pointer;font-family:inherit;}
+
+/* ── Shell ── */
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{
+  background:var(--navy); color:#fff; padding:1.8rem 1.2rem;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.brand{display:flex;align-items:center;gap:.7rem;margin-bottom:2.2rem;padding:0 .3rem;}
+.brand-mark{width:38px;height:38px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--ff-d);font-weight:900;color:var(--gold);font-size:.85rem;flex-shrink:0;}
+.brand-text{line-height:1.2;}
+.brand-text strong{display:block;font-family:var(--ff-d);font-size:1.02rem;}
+.brand-text span{display:block;font-size:.68rem;letter-spacing:.07em;color:var(--gold);text-transform:uppercase;}
+
+.nav-section{margin-bottom:.3rem;}
+.nav-label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:.9rem .8rem .4rem;}
+.nav-item{
+  display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;
+  padding:.7rem .8rem;border-radius:var(--r-sm);color:rgba(255,255,255,.75);
+  font-size:.88rem;font-weight:500;background:none;border:none;transition:.15s;
+}
+.nav-item i{width:18px;text-align:center;color:rgba(255,255,255,.4);font-size:.85rem;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+.nav-item.active{background:var(--gold-pale);color:var(--gold-light);}
+.nav-item.active i{color:var(--gold);}
+
+.sidebar-foot{margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.08);}
+.save-status{font-size:.72rem;color:rgba(255,255,255,.4);padding:0 .8rem;line-height:1.5;}
+
+/* ── Main ── */
+.main{padding:2rem clamp(1.2rem,3vw,3rem) 6rem;max-width:980px;}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+  margin-bottom:2rem;
+}
+.topbar h1{font-family:var(--ff-d);font-size:1.7rem;color:var(--navy);}
+.topbar p{color:var(--text-light);font-size:.88rem;margin-top:.2rem;}
+
+.panel{display:none;}
+.panel.active{display:block;}
+
+.card{
+  background:#fff;border:1px solid var(--ivory-dark);border-radius:var(--r-lg);
+  padding:1.8rem;margin-bottom:1.4rem;box-shadow:var(--shadow);
+}
+.card h2{font-family:var(--ff-d);font-size:1.15rem;color:var(--navy);margin-bottom:.3rem;}
+.card .hint{font-size:.83rem;color:var(--text-light);margin-bottom:1.2rem;}
+
+/* ── Form fields ── */
+.field{margin-bottom:1.1rem;}
+.field label{display:block;font-size:.83rem;font-weight:600;color:var(--text-dark);margin-bottom:.4rem;}
+.field label .opt{color:var(--text-light);font-weight:400;}
+.field input[type=text],.field input[type=tel],.field input[type=email],.field textarea{
+  width:100%;padding:.65rem .85rem;border:1.5px solid var(--ivory-dark);border-radius:var(--r-sm);
+  font-size:.92rem;font-family:inherit;background:var(--ivory);color:var(--text-dark);
+  transition:.15s;outline:none;
+}
+.field input:focus,.field textarea:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px var(--gold-pale);}
+.field textarea{resize:vertical;min-height:70px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.field-row.three{grid-template-columns:1fr 1fr 1fr;}
+@media (max-width:640px){.field-row,.field-row.three{grid-template-columns:1fr;}}
+
+/* ── Image uploader ── */
+.img-field{margin-bottom:1.4rem;}
+.img-field-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.5rem;}
+.img-field-head label{font-size:.83rem;font-weight:600;}
+.img-field-head .dims{font-size:.72rem;color:var(--text-light);}
+.img-drop{
+  position:relative;border:2px dashed var(--ivory-dark);border-radius:var(--r-md);
+  background:var(--ivory);overflow:hidden;cursor:pointer;transition:.15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.img-drop:hover{border-color:var(--gold);}
+.img-drop.has-img{border-style:solid;border-color:var(--ivory-dark);}
+.img-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.img-drop .placeholder{display:flex;flex-direction:column;align-items:center;gap:.4rem;color:var(--text-light);padding:1.5rem;text-align:center;}
+.img-drop .placeholder i{font-size:1.6rem;color:var(--ivory-dark);}
+.img-drop .placeholder span{font-size:.78rem;}
+.img-drop img{width:100%;height:100%;object-fit:cover;}
+.img-drop .remove-btn{
+  position:absolute;top:.5rem;right:.5rem;width:28px;height:28px;border-radius:50%;
+  background:rgba(10,22,40,.75);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;border:none;z-index:2;
+}
+.img-drop .remove-btn:hover{background:var(--err);}
+.img-drop .edit-badge{
+  position:absolute;bottom:.5rem;left:.5rem;background:rgba(10,22,40,.75);color:#fff;
+  font-size:.68rem;padding:.25rem .6rem;border-radius:50px;z-index:2;
+}
+
+.img-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.img-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+@media (max-width:640px){.img-grid-2,.img-grid-3{grid-template-columns:1fr;}}
+
+/* size presets */
+.h-wide{height:140px;}
+.h-tall{height:220px;}
+.h-square{height:160px;}
+.h-strip{height:120px;}
+
+/* ── Gallery category manager ── */
+.gal-cat-block{border:1px solid var(--ivory-dark);border-radius:var(--r-md);margin-bottom:1rem;overflow:hidden;}
+.gal-cat-head{
+  display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;
+  background:var(--ivory);cursor:pointer;
+}
+.gal-cat-head h3{font-size:.92rem;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:.5rem;}
+.gal-cat-head .count{font-size:.74rem;color:var(--text-light);font-weight:500;background:#fff;padding:.15rem .6rem;border-radius:50px;border:1px solid var(--ivory-dark);}
+.gal-cat-head i.chev{transition:.2s;color:var(--text-light);}
+.gal-cat-block.open .chev{transform:rotate(180deg);}
+.gal-cat-body{display:none;padding:1.1rem;}
+.gal-cat-block.open .gal-cat-body{display:block;}
+.gal-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.8rem;margin-bottom:.9rem;}
+.gal-photo{position:relative;border-radius:var(--r-sm);overflow:hidden;aspect-ratio:1;background:var(--ivory);border:1px solid var(--ivory-dark);}
+.gal-photo img{width:100%;height:100%;object-fit:cover;}
+.gal-photo .remove-btn{
+  position:absolute;top:.35rem;right:.35rem;width:24px;height:24px;border-radius:50%;
+  background:rgba(10,22,40,.75);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;border:none;
+}
+.gal-photo .remove-btn:hover{background:var(--err);}
+.add-photo-btn{
+  display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;
+  border:2px dashed var(--ivory-dark);border-radius:var(--r-sm);padding:.8rem;
+  color:var(--text-light);font-size:.85rem;font-weight:600;background:#fff;position:relative;
+}
+.add-photo-btn:hover{border-color:var(--gold);color:var(--gold);}
+.add-photo-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;border-radius:50px;
+  font-size:.85rem;font-weight:600;border:none;transition:.15s;
+}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(201,168,76,.4);}
+.btn-outline{background:#fff;color:var(--navy);border:1.5px solid var(--navy);}
+.btn-outline:hover{background:var(--navy);color:#fff;}
+.btn-ghost{background:var(--ivory);color:var(--text-mid);}
+.btn-ghost:hover{background:var(--ivory-dark);}
+.btn-sm{padding:.5rem 1rem;font-size:.78rem;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* ── Top action bar (sticky) ── */
+.action-bar{
+  position:fixed;bottom:0;left:260px;right:0;background:#fff;border-top:1px solid var(--ivory-dark);
+  padding:.9rem clamp(1.2rem,3vw,3rem);display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;z-index:50;box-shadow:0 -8px 24px rgba(10,22,40,.06);flex-wrap:wrap;
+}
+.action-bar .status-text{font-size:.82rem;color:var(--text-light);display:flex;align-items:center;gap:.5rem;}
+.action-bar .status-text i{color:var(--ok);}
+.action-buttons{display:flex;gap:.7rem;flex-wrap:wrap;}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;top:1.2rem;right:1.2rem;background:var(--navy);color:#fff;padding:.85rem 1.2rem;
+  border-radius:var(--r-md);font-size:.85rem;box-shadow:var(--shadow);z-index:200;display:flex;align-items:center;gap:.6rem;
+  transform:translateX(120%);transition:transform .3s ease;max-width:340px;
+}
+.toast.show{transform:translateX(0);}
+.toast i{color:var(--gold);}
+.toast.err i{color:#ff8a7a;}
+
+/* ── Banner ── */
+.banner{
+  background:var(--gold-pale);border:1px solid rgba(201,168,76,.35);border-radius:var(--r-md);
+  padding:1rem 1.2rem;margin-bottom:1.6rem;display:flex;gap:.8rem;align-items:flex-start;
+}
+.banner i{color:var(--gold);margin-top:.15rem;}
+.banner p{font-size:.85rem;color:var(--text-mid);line-height:1.6;}
+.banner strong{color:var(--navy);}
+
+/* ── Steps box (instructions panel) ── */
+.steps{display:flex;flex-direction:column;gap:.9rem;}
+.step{display:flex;gap:.9rem;align-items:flex-start;}
+.step-num{
+  flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--navy);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-family:var(--ff-d);font-weight:700;font-size:.85rem;
+}
+.step p{font-size:.86rem;color:var(--text-mid);}
+.step strong{color:var(--navy);}
+
+/* ── Load existing JSON ── */
+.load-row{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;}
+
+/* ── Mobile ── */
+@media (max-width:880px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{position:static;height:auto;display:flex;flex-wrap:wrap;gap:.4rem;padding:1rem;}
+  .brand{margin-bottom:.6rem;width:100%;}
+  .nav-section{display:flex;flex-wrap:wrap;gap:.4rem;width:100%;}
+  .nav-label{display:none;}
+  .nav-item{width:auto;flex:1 1 auto;justify-content:center;}
+  .sidebar-foot{display:none;}
+  .action-bar{left:0;}
+}
+</style>
 </head>
 <body>
 
-  <div class="admin-wrapper">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="brand">
-        <!-- Make sure you have your logo in the img folder! -->
-        <img src="img/logo.jpeg" alt="Logo" onerror="this.src=''"> 
+<div class="shell">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">DIS</div>
+      <div class="brand-text">
+        <strong>Destinyfield</strong>
+        <span>Site Manager</span>
+      </div>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-label">Manage</div>
+      <button class="nav-item active" data-panel="start"><i class="fas fa-house"></i> Start Here</button>
+      <button class="nav-item" data-panel="home"><i class="fas fa-image"></i> Home Page Images</button>
+      <button class="nav-item" data-panel="about"><i class="fas fa-id-badge"></i> About Us Images</button>
+      <button class="nav-item" data-panel="gallery"><i class="fas fa-images"></i> Gallery Photos</button>
+      <button class="nav-item" data-panel="contact"><i class="fas fa-address-book"></i> Contact Info</button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="save-status" id="sidebar-status">No changes yet</div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main">
+
+    <!-- START HERE -->
+    <section class="panel active" id="panel-start">
+      <div class="topbar">
         <div>
-          <h2>Destinyfield</h2>
-          <p>Admin Portal</p>
+          <h1>Welcome</h1>
+          <p>Update your website's photos and contact details — no coding needed.</p>
         </div>
       </div>
-      <nav class="admin-nav">
-        <button class="tab-btn active" data-target="tab-home"><i class="fas fa-home"></i> Home Pictures</button>
-        <button class="tab-btn" data-target="tab-about"><i class="fas fa-info-circle"></i> About Pictures</button>
-        <button class="tab-btn" data-target="tab-contact"><i class="fas fa-address-book"></i> Contact Info</button>
-        <button class="tab-btn" data-target="tab-gallery"><i class="fas fa-images"></i> Gallery</button>
-      </nav>
-      <div class="sidebar-footer">
-        <a href="index.html" class="btn-outline"><i class="fas fa-external-link-alt"></i> View Site</a>
-      </div>
-    </aside>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-      <header class="topbar">
-        <h1>Content Manager</h1>
-        <button id="save-btn" class="btn-gold"><i class="fas fa-download"></i> Save & Download Updates</button>
-      </header>
-
-    <div class="content-area">
-        
-        <!-- INSTRUCTION BANNER (Always visible at the top) -->
-        <div class="admin-instructions reveal">
-          <div class="instruction-icon"><i class="fas fa-lightbulb"></i></div>
-          <div class="instruction-text">
-            <h3>How to Update the Website</h3>
-            <ol>
-              <li><strong>Upload your picture:</strong> Go to a free image host like <a href="https://postimages.org/" target="_blank">Postimages.org</a>, upload your photo, and copy the <strong>"Direct Link"</strong> (it should end in .jpg or .png).</li>
-              <li><strong>Paste the link:</strong> Paste that link into the Image Path box below. <em>(Look for the tiny picture to appear next to the box—if it's blank, the link is broken!)</em></li>
-              <li><strong>Save changes:</strong> Click the gold <strong>Save & Download Updates</strong> button at the top right. A file named <code>content.json</code> will download to your computer.</li>
-              <li><strong>Publish to the internet:</strong> Go to the school's GitHub page, click <strong>Add file > Upload files</strong>, and drag your new <code>content.json</code> file there to replace the old one. Click <strong>Commit changes</strong>.</li>
-            </ol>
+      <div class="card">
+        <h2>How this works</h2>
+        <p class="hint">Three simple steps, every time you want to update the site.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <p><strong>Make your changes.</strong> Use the menu on the left to update photos on the Home page, About Us page, Gallery, or update phone numbers, address, email and social media links.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <p><strong>Download the update file.</strong> Click the gold "Download Update File" button at the bottom of the screen. This saves a file called <code>content.json</code> to your computer (usually in your Downloads folder).</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <p><strong>Upload it to your website.</strong> Log in to your hosting account (cPanel / FTP), find the <code>content.json</code> file in your website's main folder, and replace it with the new one you just downloaded. The website updates automatically — no other files need to change.</p>
           </div>
         </div>
-
-        <!-- HOME TAB ... (Rest of your code continues here) -->
-        
-        <!-- HOME TAB -->
-        <section id="tab-home" class="admin-section active">
-          <h3>Home Page Welcome Images</h3>
-          <p class="help-text">Update the file paths for the 3 images in the Welcome section (e.g., <code>img/school1.jpg</code>).</p>
-          <div class="form-group">
-            <label>Main Large Image</label>
-            <input type="text" id="home-img-1" placeholder="img/...">
-          </div>
-          <div class="form-group">
-            <label>Accent Image 1 (Top Right)</label>
-            <input type="text" id="home-img-2" placeholder="img/...">
-          </div>
-          <div class="form-group">
-            <label>Accent Image 2 (Bottom Right)</label>
-            <input type="text" id="home-img-3" placeholder="img/...">
-          </div>
-        </section>
-
-        <!-- ABOUT TAB -->
-        <section id="tab-about" class="admin-section">
-          <h3>About Us Pictures</h3>
-          <div class="form-group">
-            <label>Director's Photo</label>
-            <input type="text" id="about-director" placeholder="img/director.jpg">
-          </div>
-          <hr>
-          <h3>Photo Strip Images</h3>
-          <p class="help-text">The 4 images displayed in a row on the About page.</p>
-          <div class="grid-2">
-            <div class="form-group"><label>Strip Image 1</label><input type="text" id="strip-1" placeholder="img/..."></div>
-            <div class="form-group"><label>Strip Image 2</label><input type="text" id="strip-2" placeholder="img/..."></div>
-            <div class="form-group"><label>Strip Image 3</label><input type="text" id="strip-3" placeholder="img/..."></div>
-            <div class="form-group"><label>Strip Image 4</label><input type="text" id="strip-4" placeholder="img/..."></div>
-          </div>
-        </section>
-
-        <!-- CONTACT TAB -->
-        <section id="tab-contact" class="admin-section">
-          <h3>Global Contact Information</h3>
-          <p class="help-text">This will automatically update the Contact Page, Footer, and Map links.</p>
-          <div class="form-group">
-            <label>Physical Address</label>
-            <input type="text" id="contact-address">
-          </div>
-          <div class="grid-2">
-            <div class="form-group"><label>Phone Number 1</label><input type="text" id="phone-1"></div>
-            <div class="form-group"><label>Phone Number 2</label><input type="text" id="phone-2"></div>
-            <div class="form-group"><label>Phone Number 3</label><input type="text" id="phone-3"></div>
-            <div class="form-group"><label>Email Address</label><input type="email" id="contact-email"></div>
-            <div class="form-group"><label>Facebook URL</label><input type="url" id="contact-fb"></div>
-            <div class="form-group"><label>Instagram URL</label><input type="url" id="contact-ig"></div>
-            <div class="form-group"><label>TikTok URL</label><input type="url" id="contact-tt"></div>
-          </div>
-        </section>
-
-        <!-- GALLERY TAB -->
-      <!-- GALLERY TAB -->
-        <section id="tab-gallery" class="admin-section">
-          <div class="flex-between">
-            <div>
-              <h3>Gallery Manager (105 Slots)</h3>
-              <p class="help-text">Replace the image paths below to update your gallery. If a slot is left blank, it will be automatically hidden from the website.</p>
-            </div>
-          </div>
-          
-          <div id="gallery-list" class="gallery-list">
-            <!-- JavaScript will populate all 105 fixed slots here -->
-          </div>
-        </section>
-
       </div>
-    </main>
+
+      <div class="banner">
+        <i class="fas fa-circle-info"></i>
+        <p><strong>Already have a content.json from before?</strong> Load it below first, so you're editing your current site instead of starting blank.</p>
+      </div>
+
+      <div class="card">
+        <h2>Load your current content file <span style="font-weight:400;color:var(--text-light);font-size:.8rem;">(optional)</span></h2>
+        <p class="hint">If your website already has a <code>content.json</code> file, select it here to bring your existing photos and info into this tool before editing.</p>
+        <div class="load-row">
+          <button class="btn btn-outline btn-sm" id="load-json-btn"><i class="fas fa-folder-open"></i> Choose content.json file</button>
+          <input type="file" id="load-json-input" accept=".json" style="display:none">
+          <span id="load-json-status" style="font-size:.82rem;color:var(--text-light);"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Good to know</h2>
+        <p class="hint" style="margin-bottom:.8rem;">A few tips to keep things running smoothly:</p>
+        <p class="hint">• Use clear, well-lit photos — square or landscape photos work best for most spots.<br>
+        • You can leave any image blank if you don't want to change it.<br>
+        • Always keep a backup copy of your downloaded files in case you need to go back.<br>
+        • Changes only take effect after you upload the new <code>content.json</code> to your website.</p>
+      </div>
+    </section>
+
+    <!-- HOME PAGE IMAGES -->
+    <section class="panel" id="panel-home">
+      <div class="topbar">
+        <div>
+          <h1>Home Page Images</h1>
+          <p>These are the photos visitors see first when they open your website.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Hero photo stack</h2>
+        <p class="hint">The three photos that appear on the right side of the very top banner.</p>
+        <div class="img-grid-3">
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 1 — large</label></div>
+            <div class="img-drop h-tall" data-key="home_hero_1"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 2 — medium</label></div>
+            <div class="img-drop h-tall" data-key="home_hero_2"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 3 — small</label></div>
+            <div class="img-drop h-tall" data-key="home_hero_3"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>"Welcome to Destinyfield" section</h2>
+        <p class="hint">The photo collage next to the welcome text, just below the top banner.</p>
+        <div class="img-grid-3">
+          <div class="img-field">
+            <div class="img-field-head"><label>Main photo — wide</label></div>
+            <div class="img-drop h-wide" data-key="home_welcome_main"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Small photo (left)</label></div>
+            <div class="img-drop h-wide" data-key="home_welcome_accent1"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Small photo (right)</label></div>
+            <div class="img-drop h-wide" data-key="home_welcome_accent2"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Headline numbers</h2>
+        <p class="hint">The big highlighted numbers shown just below the top banner.</p>
+        <div class="field-row three" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+          <div class="field"><label>Years of Excellence</label><input type="text" id="stat_years" placeholder="15"></div>
+          <div class="field"><label>Scholars Produced</label><input type="text" id="stat_scholars" placeholder="500"></div>
+          <div class="field"><label>Commitment %</label><input type="text" id="stat_commitment" placeholder="100"></div>
+          <div class="field"><label>Core Values</label><input type="text" id="stat_values" placeholder="5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT US IMAGES -->
+    <section class="panel" id="panel-about">
+      <div class="topbar">
+        <div>
+          <h1>About Us Images</h1>
+          <p>Photos shown on the About Us page — director's photo and the photo strip.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Director's photo</h2>
+        <p class="hint">The portrait shown in the Leadership section. Use a clear, professional photo — portrait shape works best.</p>
+        <div class="img-grid-3">
+          <div class="img-field">
+            <div class="img-field-head"><label>Director photo</label></div>
+            <div class="img-drop h-tall" data-key="about_director_photo"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop image</span></div><input type="file" accept="image/*"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Photo strip</h2>
+        <p class="hint">Four photos shown in a row, between the Director section and Core Values on the About Us page.</p>
+        <div class="img-grid-3" style="grid-template-columns:repeat(4,1fr);">
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 1</label></div>
+            <div class="img-drop h-square" data-key="about_strip_1"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 2</label></div>
+            <div class="img-drop h-square" data-key="about_strip_2"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 3</label></div>
+            <div class="img-drop h-square" data-key="about_strip_3"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop</span></div><input type="file" accept="image/*"></div>
+          </div>
+          <div class="img-field">
+            <div class="img-field-head"><label>Photo 4</label></div>
+            <div class="img-drop h-square" data-key="about_strip_4"><div class="placeholder"><i class="fas fa-cloud-arrow-up"></i><span>Click or drop</span></div><input type="file" accept="image/*"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY PHOTOS -->
+    <section class="panel" id="panel-gallery">
+      <div class="topbar">
+        <div>
+          <h1>Gallery Photos</h1>
+          <p>Add or remove photos in each gallery category. Click a category to open it.</p>
+        </div>
+      </div>
+
+      <div class="banner">
+        <i class="fas fa-circle-info"></i>
+        <p>Click "Add Photo" inside any category to upload more pictures. Hover and click the <strong>×</strong> on a photo to remove it.</p>
+      </div>
+
+      <div id="gallery-categories"></div>
+    </section>
+
+    <!-- CONTACT INFO -->
+    <section class="panel" id="panel-contact">
+      <div class="topbar">
+        <div>
+          <h1>Contact Information</h1>
+          <p>This updates your address, phone numbers, email and social media everywhere they appear on the site.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Address</h2>
+        <div class="field">
+          <label>School address</label>
+          <textarea id="c_address" placeholder="#34 Forces Avenue, Old G.R.A By UTC Junction, Port Harcourt."></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Phone numbers</h2>
+        <p class="hint">These appear on the Admissions page, Contact page and footer.</p>
+        <div class="field-row three">
+          <div class="field"><label>Phone 1</label><input type="tel" id="c_phone1" placeholder="08103169141"></div>
+          <div class="field"><label>Phone 2</label><input type="tel" id="c_phone2" placeholder="08067434761"></div>
+          <div class="field"><label>Phone 3 <span class="opt">(optional)</span></label><input type="tel" id="c_phone3" placeholder="08056196995"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Email & Office Hours</h2>
+        <div class="field-row">
+          <div class="field"><label>Email address</label><input type="email" id="c_email" placeholder="destinyfieldintsch@gmail.com"></div>
+          <div class="field"><label>Office hours</label><input type="text" id="c_hours" placeholder="Monday – Friday: 7:30 AM – 4:00 PM"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Social Media</h2>
+        <div class="field-row three">
+          <div class="field"><label><i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook link</label><input type="text" id="c_facebook" placeholder="https://facebook.com/..."></div>
+          <div class="field"><label><i class="fab fa-instagram" style="color:#E1306C;"></i> Instagram link</label><input type="text" id="c_instagram" placeholder="https://instagram.com/..."></div>
+          <div class="field"><label><i class="fab fa-tiktok"></i> TikTok link</label><input type="text" id="c_tiktok" placeholder="https://tiktok.com/..."></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Google Map</h2>
+        <p class="hint">Paste a Google Maps link to your school here, and the map on the Contact page will update to point to it. To get this: search your school on Google Maps → Share → Embed a map → copy the link inside <code>src="..."</code>.</p>
+        <div class="field">
+          <label>Google Maps embed link <span class="opt">(optional)</span></label>
+          <input type="text" id="c_map" placeholder="https://maps.google.com/maps?q=...">
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══ STICKY ACTION BAR ═══ -->
+<div class="action-bar">
+  <div class="status-text"><i class="fas fa-circle-check"></i> <span id="bar-status">Ready — make your edits, then download</span></div>
+  <div class="action-buttons">
+    <button class="btn btn-ghost" id="reset-btn"><i class="fas fa-rotate-left"></i> Start Over</button>
+    <button class="btn btn-gold" id="download-btn"><i class="fas fa-download"></i> Download Update File</button>
   </div>
+</div>
 
-  <script src="js/admin.js"></script>
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toast-msg"></span></div>
+
+<script>
+/* ════════════════════════════════════════════════
+   STATE
+   ════════════════════════════════════════════════ */
+const state = {
+  home: {
+    hero: { 1:null, 2:null, 3:null },
+    welcome: { main:null, accent1:null, accent2:null },
+    metrics: { years:'15', scholars:'500', commitment:'100', values:'5' }
+  },
+  about: {
+    directorPhoto: null,
+    strip: [null,null,null,null]
+  },
+  gallery: {
+    environment: [], advert: [], colour: [], grandparents: [],
+    classroom: [], sports: [], homeec: [], xmas: []
+  },
+  global: {
+    address: '', phones: ['','',''], email: '', hours: '',
+    facebook: '', instagram: '', tiktok: '', mapEmbed: ''
+  }
+};
+
+const GALLERY_LABELS = {
+  environment: 'School Environment',
+  advert: 'Advert Shows',
+  colour: "Colour Day",
+  grandparents: 'Grandparents Day',
+  classroom: 'Classroom',
+  sports: 'Inter-House Sports',
+  homeec: 'Home Economics',
+  xmas: 'X-Mas Show'
+};
+
+let dirty = false;
+
+/* ════════════════════════════════════════════════
+   NAVIGATION
+   ════════════════════════════════════════════════ */
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+/* ════════════════════════════════════════════════
+   TOAST
+   ════════════════════════════════════════════════ */
+function showToast(msg, isErr=false){
+  const t = document.getElementById('toast');
+  const icon = t.querySelector('i');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.toggle('err', isErr);
+  icon.className = isErr ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+
+function markDirty(){
+  dirty = true;
+  document.getElementById('sidebar-status').textContent = 'You have unsaved changes';
+  document.getElementById('bar-status').innerHTML = '<i class="fas fa-circle-exclamation" style="color:var(--warn)"></i> You have changes not yet downloaded';
+}
+function markClean(){
+  dirty = false;
+  document.getElementById('sidebar-status').textContent = 'All changes downloaded';
+  document.getElementById('bar-status').innerHTML = '<i class="fas fa-circle-check"></i> Ready — make your edits, then download';
+}
+
+/* ════════════════════════════════════════════════
+   IMAGE HELPERS — read file as base64, render preview
+   ════════════════════════════════════════════════ */
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) { reject('not an image'); return; }
+    if (file.size > 6 * 1024 * 1024) { reject('too large'); return; }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject('read failed');
+    reader.readAsDataURL(file);
+  });
+}
+
+function setupSingleImageDrop(dropEl, onChange){
+  const input = dropEl.querySelector('input[type=file]');
+  const placeholder = dropEl.querySelector('.placeholder');
+
+  function renderPreview(dataUrl){
+    dropEl.querySelectorAll('img,.remove-btn,.edit-badge').forEach(el => el.remove());
+    if (!dataUrl){
+      dropEl.classList.remove('has-img');
+      placeholder.style.display = 'flex';
+      return;
+    }
+    placeholder.style.display = 'none';
+    dropEl.classList.add('has-img');
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    const badge = document.createElement('span');
+    badge.className = 'edit-badge';
+    badge.textContent = 'Click to change';
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.type = 'button';
+    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); e.preventDefault();
+      onChange(null);
+      renderPreview(null);
+      markDirty();
+    });
+    dropEl.appendChild(img);
+    dropEl.appendChild(badge);
+    dropEl.appendChild(removeBtn);
+  }
+
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) return;
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      onChange(dataUrl);
+      renderPreview(dataUrl);
+      markDirty();
+    } catch(err){
+      showToast(err === 'too large' ? 'That image is too large — please use one under 6MB.' : 'Could not load that image. Try a JPG or PNG.', true);
+    }
+    input.value = '';
+  });
+
+  ['dragover','dragenter'].forEach(ev => dropEl.addEventListener(ev, e => { e.preventDefault(); dropEl.style.borderColor = 'var(--gold)'; }));
+  ['dragleave','drop'].forEach(ev => dropEl.addEventListener(ev, e => { e.preventDefault(); dropEl.style.borderColor=''; }));
+  dropEl.addEventListener('drop', async e => {
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      onChange(dataUrl);
+      renderPreview(dataUrl);
+      markDirty();
+    } catch(err){
+      showToast('Could not load that image. Try a JPG or PNG.', true);
+    }
+  });
+
+  return { renderPreview };
+}
+
+/* Wire up all single-image drops declared in the HTML via data-key */
+const imageFieldRenderers = {};
+document.querySelectorAll('.img-drop[data-key]').forEach(dropEl => {
+  const key = dropEl.dataset.key;
+  const r = setupSingleImageDrop(dropEl, (dataUrl) => {
+    setStateForKey(key, dataUrl);
+  });
+  imageFieldRenderers[key] = r;
+});
+
+function setStateForKey(key, dataUrl){
+  if (key === 'home_hero_1') state.home.hero[1] = dataUrl;
+  else if (key === 'home_hero_2') state.home.hero[2] = dataUrl;
+  else if (key === 'home_hero_3') state.home.hero[3] = dataUrl;
+  else if (key === 'home_welcome_main') state.home.welcome.main = dataUrl;
+  else if (key === 'home_welcome_accent1') state.home.welcome.accent1 = dataUrl;
+  else if (key === 'home_welcome_accent2') state.home.welcome.accent2 = dataUrl;
+  else if (key === 'about_director_photo') state.about.directorPhoto = dataUrl;
+  else if (key.startsWith('about_strip_')){
+    const idx = parseInt(key.split('_')[2],10) - 1;
+    state.about.strip[idx] = dataUrl;
+  }
+}
+
+function refreshAllImagePreviews(){
+  if (imageFieldRenderers['home_hero_1']) imageFieldRenderers['home_hero_1'].renderPreview(state.home.hero[1]);
+  if (imageFieldRenderers['home_hero_2']) imageFieldRenderers['home_hero_2'].renderPreview(state.home.hero[2]);
+  if (imageFieldRenderers['home_hero_3']) imageFieldRenderers['home_hero_3'].renderPreview(state.home.hero[3]);
+  if (imageFieldRenderers['home_welcome_main']) imageFieldRenderers['home_welcome_main'].renderPreview(state.home.welcome.main);
+  if (imageFieldRenderers['home_welcome_accent1']) imageFieldRenderers['home_welcome_accent1'].renderPreview(state.home.welcome.accent1);
+  if (imageFieldRenderers['home_welcome_accent2']) imageFieldRenderers['home_welcome_accent2'].renderPreview(state.home.welcome.accent2);
+  if (imageFieldRenderers['about_director_photo']) imageFieldRenderers['about_director_photo'].renderPreview(state.about.directorPhoto);
+  for (let i=0;i<4;i++){
+    const key = 'about_strip_' + (i+1);
+    if (imageFieldRenderers[key]) imageFieldRenderers[key].renderPreview(state.about.strip[i]);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   GALLERY CATEGORY MANAGER
+   ════════════════════════════════════════════════ */
+function buildGalleryUI(){
+  const wrap = document.getElementById('gallery-categories');
+  wrap.innerHTML = '';
+  Object.keys(GALLERY_LABELS).forEach(cat => {
+    const block = document.createElement('div');
+    block.className = 'gal-cat-block';
+    block.innerHTML = `
+      <div class="gal-cat-head">
+        <h3><i class="fas fa-folder" style="color:var(--gold);font-size:.8rem;"></i> ${GALLERY_LABELS[cat]}</h3>
+        <div style="display:flex;align-items:center;gap:.7rem;">
+          <span class="count" data-count-for="${cat}">0 photos</span>
+          <i class="fas fa-chevron-down chev"></i>
+        </div>
+      </div>
+      <div class="gal-cat-body">
+        <div class="gal-photo-grid" data-grid-for="${cat}"></div>
+        <label class="add-photo-btn">
+          <i class="fas fa-plus"></i> Add Photo
+          <input type="file" accept="image/*" multiple data-add-for="${cat}">
+        </label>
+      </div>
+    `;
+    wrap.appendChild(block);
+
+    block.querySelector('.gal-cat-head').addEventListener('click', () => {
+      block.classList.toggle('open');
+    });
+
+    const addInput = block.querySelector(`input[data-add-for="${cat}"]`);
+    addInput.addEventListener('click', e => e.stopPropagation());
+    addInput.addEventListener('change', async () => {
+      const files = Array.from(addInput.files);
+      let added = 0, failed = 0;
+      for (const file of files){
+        try {
+          const dataUrl = await readFileAsDataURL(file);
+          state.gallery[cat].push(dataUrl);
+          added++;
+        } catch(e){ failed++; }
+      }
+      renderGalleryCategory(cat);
+      if (added) markDirty();
+      if (failed) showToast(`${failed} photo(s) couldn't be added — try JPG or PNG under 6MB.`, true);
+      else if (added) showToast(`Added ${added} photo${added>1?'s':''} to ${GALLERY_LABELS[cat]}.`);
+      addInput.value = '';
+    });
+  });
+  Object.keys(GALLERY_LABELS).forEach(renderGalleryCategory);
+}
+
+function renderGalleryCategory(cat){
+  const grid = document.querySelector(`[data-grid-for="${cat}"]`);
+  const countEl = document.querySelector(`[data-count-for="${cat}"]`);
+  if (!grid) return;
+  grid.innerHTML = '';
+  const photos = state.gallery[cat];
+  countEl.textContent = photos.length + ' photo' + (photos.length === 1 ? '' : 's');
+  photos.forEach((dataUrl, idx) => {
+    const item = document.createElement('div');
+    item.className = 'gal-photo';
+    item.innerHTML = `<img src="${dataUrl}"><button class="remove-btn" type="button"><i class="fas fa-times"></i></button>`;
+    item.querySelector('.remove-btn').addEventListener('click', () => {
+      state.gallery[cat].splice(idx, 1);
+      renderGalleryCategory(cat);
+      markDirty();
+    });
+    grid.appendChild(item);
+  });
+}
+buildGalleryUI();
+
+/* ════════════════════════════════════════════════
+   CONTACT FORM — bind inputs to state
+   ════════════════════════════════════════════════ */
+const contactInputs = {
+  c_address: ['global','address'],
+  c_phone1: ['global','phones',0],
+  c_phone2: ['global','phones',1],
+  c_phone3: ['global','phones',2],
+  c_email: ['global','email'],
+  c_hours: ['global','hours'],
+  c_facebook: ['global','facebook'],
+  c_instagram: ['global','instagram'],
+  c_tiktok: ['global','tiktok'],
+  c_map: ['global','mapEmbed'],
+  stat_years: ['home','metrics','years'],
+  stat_scholars: ['home','metrics','scholars'],
+  stat_commitment: ['home','metrics','commitment'],
+  stat_values: ['home','metrics','values']
+};
+
+function getPath(obj, path){
+  let cur = obj;
+  for (const p of path) cur = cur[p];
+  return cur;
+}
+function setPath(obj, path, val){
+  let cur = obj;
+  for (let i=0;i<path.length-1;i++) cur = cur[path[i]];
+  cur[path[path.length-1]] = val;
+}
+
+Object.entries(contactInputs).forEach(([id, path]) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    setPath(state, path, el.value);
+    markDirty();
+  });
+});
+
+function refreshContactInputs(){
+  Object.entries(contactInputs).forEach(([id, path]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = getPath(state, path);
+    el.value = val || '';
+  });
+}
+
+/* ════════════════════════════════════════════════
+   DOWNLOAD content.json
+   ════════════════════════════════════════════════ */
+document.getElementById('download-btn').addEventListener('click', () => {
+  const payload = {
+    home: {
+      heroTitle: undefined, // left untouched if not edited elsewhere — admin doesn't manage hero copy
+      images: {
+        hero1: state.home.hero[1],
+        hero2: state.home.hero[2],
+        hero3: state.home.hero[3],
+        welcomeMain: state.home.welcome.main,
+        welcomeAccent1: state.home.welcome.accent1,
+        welcomeAccent2: state.home.welcome.accent2
+      },
+      metrics: { ...state.home.metrics }
+    },
+    about: {
+      directorPhoto: state.about.directorPhoto,
+      photoStrip: [...state.about.strip]
+    },
+    gallery: { ...state.gallery },
+    global: {
+      address: state.global.address,
+      phones: state.global.phones.filter(p => p && p.trim() !== ''),
+      email: state.global.email,
+      hours: state.global.hours,
+      facebook: state.global.facebook,
+      instagram: state.global.instagram,
+      tiktok: state.global.tiktok,
+      mapEmbed: state.global.mapEmbed
+    },
+    generatedAt: new Date().toISOString()
+  };
+  delete payload.home.heroTitle;
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'content.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  markClean();
+  showToast('content.json downloaded. Now upload it to your website to publish changes.');
+});
+
+/* ════════════════════════════════════════════════
+   LOAD EXISTING content.json
+   ════════════════════════════════════════════════ */
+document.getElementById('load-json-btn').addEventListener('click', () => {
+  document.getElementById('load-json-input').click();
+});
+document.getElementById('load-json-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('load-json-status');
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (data.home){
+      if (data.home.images){
+        state.home.hero[1] = data.home.images.hero1 || null;
+        state.home.hero[2] = data.home.images.hero2 || null;
+        state.home.hero[3] = data.home.images.hero3 || null;
+        state.home.welcome.main = data.home.images.welcomeMain || null;
+        state.home.welcome.accent1 = data.home.images.welcomeAccent1 || null;
+        state.home.welcome.accent2 = data.home.images.welcomeAccent2 || null;
+      }
+      if (data.home.metrics){
+        state.home.metrics = { ...state.home.metrics, ...data.home.metrics };
+      }
+    }
+    if (data.about){
+      state.about.directorPhoto = data.about.directorPhoto || null;
+      if (Array.isArray(data.about.photoStrip)){
+        state.about.strip = [0,1,2,3].map(i => data.about.photoStrip[i] || null);
+      }
+    }
+    if (data.gallery){
+      Object.keys(GALLERY_LABELS).forEach(cat => {
+        state.gallery[cat] = Array.isArray(data.gallery[cat]) ? data.gallery[cat] : [];
+      });
+    }
+    if (data.global){
+      state.global.address = data.global.address || '';
+      state.global.phones = [0,1,2].map(i => (data.global.phones || [])[i] || '');
+      state.global.email = data.global.email || '';
+      state.global.hours = data.global.hours || '';
+      state.global.facebook = data.global.facebook || '';
+      state.global.instagram = data.global.instagram || '';
+      state.global.tiktok = data.global.tiktok || '';
+      state.global.mapEmbed = data.global.mapEmbed || '';
+    }
+
+    refreshAllImagePreviews();
+    refreshContactInputs();
+    buildGalleryUI();
+    statusEl.textContent = 'Loaded "' + file.name + '" successfully.';
+    statusEl.style.color = 'var(--ok)';
+    showToast('Your existing content was loaded. You can now make edits.');
+    markClean();
+  } catch (err){
+    statusEl.textContent = 'Could not read that file — make sure it is a valid content.json file.';
+    statusEl.style.color = 'var(--err)';
+    showToast('Could not read that file. Make sure it is the content.json from your website.', true);
+  }
+  e.target.value = '';
+});
+
+/* ════════════════════════════════════════════════
+   RESET / START OVER
+   ════════════════════════════════════════════════ */
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('This clears everything you have entered in this tool (it will NOT affect your live website until you download and upload a file). Continue?')) return;
+  location.reload();
+});
+
+/* Warn before closing tab with unsaved changes */
+window.addEventListener('beforeunload', (e) => {
+  if (dirty){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+</script>
 </body>
 </html>
