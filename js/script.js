@@ -1,76 +1,162 @@
 /* ═══════════════════════════════════════════
-   DESTINYFIELD INTERNATIONAL SCHOOLS
-   Master JavaScript File
+   CMS CONTENT LOADER — UPDATED
+   Reads content.json (produced by admin.html) and
+   applies images + contact info across the site.
+
+   HOW TO USE THIS FILE:
+   Open your existing js/script.js and REPLACE the
+   function called `loadCMSContent` (Section 1, near
+   the top of the file) with the version below.
+   Leave everything else in script.js exactly as it is.
    ═══════════════════════════════════════════ */
 
-// ==========================================
-// 1. CMS INTEGRATION (Saved for later)
-// ==========================================
 async function loadCMSContent() {
   try {
     const res = await fetch(`content.json?t=${new Date().getTime()}`);
     if (!res.ok) return;
     const data = await res.json();
 
-    const setHtml = (sel, val) => { const el = document.querySelector(sel); if(el) el.innerHTML = val; };
-    const setImg = (sel, val) => { const el = document.querySelector(sel); if(el && val) el.src = val; };
+    const setImg = (selector, val) => {
+      if (!val) return;
+      document.querySelectorAll(selector).forEach(el => { el.src = val; });
+    };
+    const setText = (selector, val) => {
+      if (val === undefined || val === null || val === '') return;
+      document.querySelectorAll(selector).forEach(el => { el.textContent = val; });
+    };
 
-    // Update Home Page
-    setHtml('.hero-title strong', data.home.heroTitle);
-    setHtml('.hero-tagline', data.home.heroTagline);
-    
-    const stats = document.querySelectorAll('.stat-num');
-    if(stats.length >= 4) {
-      stats[0].dataset.count = data.home.metrics.years;
-      stats[1].dataset.count = data.home.metrics.scholars;
-      stats[2].dataset.count = data.home.metrics.commitment;
-      stats[3].dataset.count = data.home.metrics.values;
+    /* ── HOME PAGE IMAGES ── */
+    if (data.home && data.home.images) {
+      const img = data.home.images;
+      setImg('.hp-card-1 img', img.hero1);
+      setImg('.hp-card-2 img', img.hero2);
+      setImg('.hp-card-3 img', img.hero3);
+      setImg('.img-card.main-img img', img.welcomeMain);
+      setImg('.img-card.accent-img-1 img', img.welcomeAccent1);
+      setImg('.img-card.accent-img-2 img', img.welcomeAccent2);
     }
 
-
-
-    // Update About Page
-
-    
-
-    // Update Global Details
-    const addressBadges = document.querySelectorAll('.map-address-badge span, .info-card p, .footer-contact-item p');
-    addressBadges.forEach(el => { 
-      if(el.innerText.includes('Forces Avenue')) el.innerText = data.global.address; 
-    });
-
-    document.querySelectorAll('a[href*="facebook.com"]').forEach(link => { link.href = data.global.facebook; });
-    document.querySelectorAll('a[href^="mailto:"]').forEach(link => { link.href = `mailto:${data.global.email}`; });
-
-    const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
-    let phoneIndex = 0;
-    phoneLinks.forEach(link => {
-      const newPhone = data.global.phones[phoneIndex % data.global.phones.length];
-      link.href = `tel:${newPhone}`;
-      if (!link.innerHTML.includes('<i')) { link.innerText = newPhone; }
-      phoneIndex++;
-    });
-
-    // Automated Bento Layout Generator
-    const galleryGrid = document.getElementById('bento-gallery');
-    if (galleryGrid && data.gallery) {
-      galleryGrid.innerHTML = '';
-      const bentoPattern = ['bento-large', 'bento-normal', 'bento-tall', 'bento-wide', 'bento-normal', 'bento-normal'];
-      data.gallery.forEach((item, index) => {
-        const sizeClass = bentoPattern[index % bentoPattern.length];
-        galleryGrid.innerHTML += `
-          <div class="bento-item ${sizeClass}" data-category="${item.category}">
-            <img src="${item.image}" alt="${item.caption || 'School Photo'}" loading="lazy" />
-            <div class="bento-caption">${item.caption || ''}</div>
-          </div>
-        `;
-      });
+    /* ── HOME PAGE METRICS ── */
+    if (data.home && data.home.metrics) {
+      const stats = document.querySelectorAll('.stat-num');
+      const m = data.home.metrics;
+      if (stats.length >= 4) {
+        if (m.years)       stats[0].dataset.count = m.years;
+        if (m.scholars)    stats[1].dataset.count = m.scholars;
+        if (m.commitment)  stats[2].dataset.count = m.commitment;
+        if (m.values)      stats[3].dataset.count = m.values;
+      }
     }
+
+    /* ── ABOUT US IMAGES ── */
+    if (data.about) {
+      setImg('.director-photo-frame img', data.about.directorPhoto);
+      if (Array.isArray(data.about.photoStrip)) {
+        const stripImgs = document.querySelectorAll('.about-photo-strip .strip-img img');
+        data.about.photoStrip.forEach((src, i) => {
+          if (src && stripImgs[i]) stripImgs[i].src = src;
+        });
+      }
+    }
+
+    /* ── GALLERY PHOTOS ── */
+    if (data.gallery) {
+      const galGrid = document.getElementById('gal-grid');
+      if (galGrid) {
+        Object.entries(data.gallery).forEach(([cat, photos]) => {
+          if (!Array.isArray(photos) || photos.length === 0) return;
+          // Remove existing items in this category that came from the static HTML
+          galGrid.querySelectorAll(`.gal-item[data-cat="${cat}"]`).forEach(el => el.remove());
+          // Re-add from content.json
+          photos.forEach((src) => {
+            const item = document.createElement('div');
+            item.className = 'gal-item';
+            item.dataset.cat = cat;
+            item.dataset.label = cat;
+            item.innerHTML = `
+              <img src="${src}" alt="${cat}" loading="lazy" />
+              <div class="gal-overlay">
+                <button class="gal-expand"><i class="fas fa-expand-alt"></i></button>
+                <p>${cat}</p>
+              </div>`;
+            galGrid.appendChild(item);
+          });
+        });
+      }
+    }
+
+    /* ── GLOBAL CONTACT INFO ── */
+    if (data.global) {
+      const g = data.global;
+
+      // Address — every element showing the school address
+      if (g.address) {
+        document.querySelectorAll('.map-address-badge span, .info-card p, .footer-contact-item p, .news-contact-strip span')
+          .forEach(el => {
+            if (el.textContent.includes('Forces Avenue') || el.closest('.info-card') ) {
+              // Only replace address-looking text, skip phone/hours blocks
+              if (el.textContent.match(/Avenue|Road|Street|G\.R\.A|Junction/i) || el.parentElement?.querySelector('h4')?.textContent === 'Our Address') {
+                el.textContent = g.address;
+              }
+            }
+          });
+      }
+
+      // Phone numbers — replace tel: links in order of appearance
+      if (g.phones && g.phones.length) {
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        phoneLinks.forEach((link, i) => {
+          const newPhone = g.phones[i % g.phones.length];
+          if (!newPhone) return;
+          link.href = `tel:${newPhone.replace(/\s+/g,'')}`;
+          if (link.children.length === 0) {
+            link.textContent = newPhone;
+          } else {
+            // Has an icon — update trailing text node only
+            const lastNode = link.lastChild;
+            if (lastNode && lastNode.nodeType === Node.TEXT_NODE) {
+              lastNode.textContent = ' ' + newPhone;
+            }
+          }
+        });
+      }
+
+      // Email
+      if (g.email) {
+        document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+          link.href = `mailto:${g.email}`;
+          if (link.children.length === 0) link.textContent = g.email;
+        });
+      }
+
+      // Office hours
+      if (g.hours) {
+        document.querySelectorAll('.info-card').forEach(card => {
+          const h4 = card.querySelector('h4');
+          if (h4 && h4.textContent.trim() === 'School Hours') {
+            const firstP = card.querySelector('p');
+            if (firstP) firstP.textContent = g.hours;
+          }
+        });
+      }
+
+      // Social links
+      if (g.facebook) document.querySelectorAll('a[href*="facebook.com"]').forEach(a => a.href = g.facebook);
+      if (g.instagram) document.querySelectorAll('a[href*="instagram.com"]').forEach(a => a.href = g.instagram);
+      if (g.tiktok) document.querySelectorAll('a[href*="tiktok.com"]').forEach(a => a.href = g.tiktok);
+
+      // Map embed
+      if (g.mapEmbed) {
+        document.querySelectorAll('.map-wrapper iframe').forEach(frame => {
+          frame.src = g.mapEmbed;
+        });
+      }
+    }
+
   } catch (err) {
     console.error("CMS Load Error:", err);
   }
 }
-
 // ==========================================
 // 2. CORE APPLICATION LOGIC
 // ==========================================
