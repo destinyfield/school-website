@@ -59,22 +59,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('contact-ig').value = cmsData.global.instagram || "";
   document.getElementById('contact-tt').value = cmsData.global.tiktok || "";
 
- // 4. GALLERY MANAGER (105 Fixed Replace-Only Slots)
+// 4. GALLERY MANAGER (105 Slots with Live Preview)
   const galleryList = document.getElementById('gallery-list');
   galleryList.innerHTML = ''; 
 
-  const MAX_SLOTS = 105; // Locked to your exact total picture count
+  const MAX_SLOTS = 105; 
 
   for (let i = 0; i < MAX_SLOTS; i++) {
-    // If a photo exists in the JSON, load it. Otherwise, leave it blank.
     const item = (cmsData.gallery && cmsData.gallery[i]) ? cmsData.gallery[i] : { image: "", category: "environment", caption: "" };
     
     const row = document.createElement('div');
     row.className = 'gallery-row';
-    // 4 Columns: Badge, Image Path, Category, Caption
-    row.style.gridTemplateColumns = '70px 2fr 1fr 1fr'; 
+    
     row.innerHTML = `
       <div class="slot-badge">Slot ${i + 1}</div>
+      <img src="${item.image}" class="preview-thumb" onerror="this.style.opacity='0'" onload="this.style.opacity='1'" alt="">
       <div class="form-group">
         <label>Image Path</label>
         <input type="text" class="gal-img" placeholder="img/pic.jpg" value="${item.image}">
@@ -97,6 +96,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         <input type="text" class="gal-cap" placeholder="Optional" value="${item.caption || ''}">
       </div>
     `;
+
+    // The Magic Live Preview Script
+    const inputPath = row.querySelector('.gal-img');
+    const thumbImg = row.querySelector('.preview-thumb');
+
+    inputPath.addEventListener('input', (e) => {
+      thumbImg.src = e.target.value.trim(); // Instantly updates the picture as they type!
+    });
+
     galleryList.appendChild(row);
   }
 
