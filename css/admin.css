@@ -60,15 +60,27 @@ button { cursor: pointer; border-radius: 6px; font-weight: 500; transition: 0.2s
 
 /* GALLERY LIST (Replace Only Mode) */
 .gallery-list { display: flex; flex-direction: column; gap: 1rem; }
+/* Update the grid to make room for a tiny picture */
 .gallery-row { 
   display: grid; 
-  grid-template-columns: 70px 2fr 1fr 1fr; 
+  grid-template-columns: 70px 50px 2fr 1fr 1fr; /* Added a 50px column for the thumbnail */
   gap: 1rem; 
   align-items: end; 
   background: var(--bg); 
   padding: 1rem; 
   border-radius: 8px; 
   border: 1px solid var(--border); 
+}
+
+/* Style for the live preview thumbnail */
+.preview-thumb {
+  width: 50px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: #E2E8F0; /* Light grey placeholder if no image is typed */
+  margin-bottom: 2px;
 }
 .gallery-row .form-group { margin-bottom: 0; }
 
