@@ -71,12 +71,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const row = document.createElement('div');
     row.className = 'gallery-row';
     
-    row.innerHTML = `
+   row.innerHTML = `
       <div class="slot-badge">Slot ${i + 1}</div>
-      <img src="${item.image}" class="preview-thumb" onerror="this.style.opacity='0'" onload="this.style.opacity='1'" alt="">
+      <img src="${item.image}" class="preview-thumb" alt="Preview">
       <div class="form-group">
         <label>Image Path</label>
-        <input type="text" class="gal-img" placeholder="img/pic.jpg" value="${item.image}">
+        <input type="text" class="gal-img" placeholder="https://i.postimg.cc/...jpg" value="${item.image}">
       </div>
       <div class="form-group">
         <label>Category</label>
@@ -97,12 +97,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     `;
 
-    // The Magic Live Preview Script
+    // Bulletproof Live Preview
     const inputPath = row.querySelector('.gal-img');
     const thumbImg = row.querySelector('.preview-thumb');
 
     inputPath.addEventListener('input', (e) => {
-      thumbImg.src = e.target.value.trim(); // Instantly updates the picture as they type!
+      const newSrc = e.target.value.trim();
+      if (newSrc !== "") {
+        thumbImg.src = newSrc;
+        thumbImg.style.display = "block";
+      } else {
+        thumbImg.removeAttribute('src'); // Clears the broken icon if the box is emptied
+      }
     });
 
     galleryList.appendChild(row);
