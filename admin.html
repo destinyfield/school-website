@@ -142,9 +142,21 @@ button{cursor:pointer;font-family:inherit;}
 .gal-photo img{width:100%;height:100%;object-fit:cover;}
 .gal-photo .remove-btn{
   position:absolute;top:.35rem;right:.35rem;width:24px;height:24px;border-radius:50%;
-  background:rgba(10,22,40,.75);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;border:none;
+  background:rgba(10,22,40,.75);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;border:none;z-index:3;
 }
 .gal-photo .remove-btn:hover{background:var(--err);}
+.gal-replace-label{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;
+  background:rgba(10,22,40,0);color:transparent;font-size:.7rem;font-weight:700;cursor:pointer;transition:.15s;
+}
+.gal-photo:hover .gal-replace-label{background:rgba(10,22,40,.68);color:#fff;}
+.gal-replace-label i{font-size:1rem;}
+.gal-empty-slot{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;
+  color:var(--text-light);font-size:.68rem;font-weight:600;cursor:pointer;border:2px dashed var(--ivory-dark);border-radius:var(--r-sm);
+}
+.gal-empty-slot:hover{border-color:var(--gold);color:var(--gold);}
+.gal-empty-slot i{font-size:1.1rem;}
 .add-photo-btn{
   display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;
   border:2px dashed var(--ivory-dark);border-radius:var(--r-sm);padding:.8rem;
@@ -509,8 +521,14 @@ const state = {
     strip: [null,null,null,null]
   },
   gallery: {
-    environment: [], advert: [], colour: [], grandparents: [],
-    classroom: [], sports: [], homeec: [], xmas: []
+    environment: new Array(7).fill(null),
+    advert: new Array(14).fill(null),
+    colour: new Array(5).fill(null),
+    grandparents: new Array(3).fill(null),
+    classroom: new Array(6).fill(null),
+    sports: new Array(57).fill(null),
+    homeec: new Array(10).fill(null),
+    xmas: new Array(3).fill(null)
   },
   global: {
     address: '', phones: ['','',''], email: '', hours: '',
@@ -527,6 +545,60 @@ const GALLERY_LABELS = {
   sports: 'Inter-House Sports',
   homeec: 'Home Economics',
   xmas: 'X-Mas Show'
+};
+
+/* The photos currently live on the website, in order, used to pre-fill each slot
+   so the admin opens already showing what's on the site today. */
+const EXISTING_GALLERY_PHOTOS = {
+  advert: [
+    'img/ap/DSC_7293.jpg','img/ap/DSC_7293-2.jpg','img/ap/DSC_7303.jpg','img/ap/DSC_7310.jpg',
+    'img/ap/DSC_7331.jpg','img/ap/DSC_7332.jpg','img/ap/DSC_7333.jpg','img/ap/DSC_7334.jpg',
+    'img/ap/DSC_7344.jpg','img/ap/DSC_7345.jpg','img/ap/DSC_7346.jpg','img/ap/DSC_7346.jpg',
+    'img/ap/DSC_7380.jpg','img/ap/DSC_7381.jpg'
+  ],
+  colour: [
+    'img/cd/IMG_5429 copy.webp','img/cd/IMG_5448 copy.webp','img/cd/IMG_5451 copy.webp',
+    'img/cd/IMG_5460 copy.webp','img/cd/IMG_5464 copy.webp'
+  ],
+  grandparents: [
+    'img/gp/IMG_2139.JPG','img/gp/IMG_2132.JPG','img/gp/IMG_2190.JPG'
+  ],
+  classroom: [
+    'img/pic 11.jpeg','img/pic 13.jpeg','img/pic 14.jpeg','img/pic 15.jpeg','img/pic 16.jpeg','img/pic 17.jpeg'
+  ],
+  sports: [
+    'img/in/IMG_8008.webp','img/in/IMG_3585.webp','img/in/IMG_3603.webp','img/in/IMG_3605.webp',
+    'img/in/IMG_3607.webp','img/in/IMG_3611.webp','img/in/IMG_3616.webp','img/in/IMG_3648.webp',
+    'img/in/IMG_3775.webp','img/in/IMG_3777.webp','img/in/IMG_3804.webp','img/in/IMG_3833.webp',
+    'img/in/IMG_3843.webp','img/in/IMG_3855.webp','img/in/IMG_3859.webp','img/in/IMG_3861.webp',
+    'img/in/IMG_7960.webp','img/in/IMG_7963.webp','img/in/IMG_7964.webp','img/in/IMG_7965.webp',
+    'img/in/IMG_7966.webp','img/in/IMG_7967.webp','img/in/IMG_7968.webp','img/in/IMG_7969.webp',
+    'img/in/IMG_7970.webp','img/in/IMG_7971.webp','img/in/IMG_7972.webp','img/in/IMG_7973.webp',
+    'img/in/IMG_7974.webp','img/in/IMG_7975.webp','img/in/IMG_7976.webp','img/in/IMG_7978.webp',
+    'img/in/IMG_7979.webp','img/in/IMG_7980.webp','img/in/IMG_7981.webp','img/in/IMG_7983.webp',
+    'img/in/IMG_7984 copy.webp','img/in/IMG_7984.webp','img/in/IMG_7985.webp','img/in/IMG_7986.webp',
+    'img/in/IMG_7987.webp','img/in/IMG_7988.webp','img/in/IMG_7989.webp','img/in/IMG_7990.webp',
+    'img/in/IMG_7991.webp','img/in/IMG_7992.webp','img/in/IMG_7993.webp','img/in/IMG_7994.webp',
+    'img/in/IMG_7995.webp','img/in/IMG_7996.webp','img/in/IMG_7997.webp','img/in/IMG_7998.webp',
+    'img/in/IMG_7999.webp','img/in/IMG_8000.webp','img/in/IMG_8003.webp','img/in/IMG_8004.webp',
+    'img/in/IMG_8007.webp'
+  ],
+  homeec: [
+    'img/he/IMG_1645.webp','img/he/IMG_1616.webp','img/he/IMG_1626.webp','img/he/IMG_1627.webp',
+    'img/he/IMG_1628.webp','img/he/IMG_1629.webp','img/he/IMG_1630.webp','img/he/IMG_1645.webp',
+    'img/he/IMG_1647.webp','img/he/IMG_1648.webp'
+  ],
+  environment: [
+    'img/pic 7.jpeg','img/pic 8.jpeg','img/pic 19.jpeg','img/pic 17.jpeg','img/pic 19.jpeg','img/pic 20.jpeg','img/pic 21.jpeg'
+  ],
+  xmas: [
+    'img/xs/IMG_2868 copy.webp','img/xs/IMG_2963 copy.webp','img/xs/IMG_2915 copy.webp'
+  ]
+};
+
+const GALLERY_SLOT_COUNTS = {
+  environment: 7, advert: 14, colour: 5, grandparents: 3,
+  classroom: 6, sports: 57, homeec: 10, xmas: 3
 };
 
 let dirty = false;
@@ -687,53 +759,45 @@ function refreshAllImagePreviews(){
 }
 
 /* ════════════════════════════════════════════════
-   GALLERY CATEGORY MANAGER
+   GALLERY CATEGORY MANAGER — fixed slots, replace-in-place
    ════════════════════════════════════════════════ */
+function initGalleryDefaults(){
+  Object.keys(GALLERY_SLOT_COUNTS).forEach(cat => {
+    const total = GALLERY_SLOT_COUNTS[cat];
+    const existing = EXISTING_GALLERY_PHOTOS[cat] || [];
+    state.gallery[cat] = new Array(total).fill(null).map((_, i) => ({
+      src: existing[i] || null,   // currently showing on the live site (path), or null if no replacement yet
+      replaced: null,             // base64 data url, set once the user uploads a new photo for this slot
+      isExisting: !!existing[i]
+    }));
+  });
+}
+initGalleryDefaults();
+
 function buildGalleryUI(){
   const wrap = document.getElementById('gallery-categories');
   wrap.innerHTML = '';
   Object.keys(GALLERY_LABELS).forEach(cat => {
+    const total = GALLERY_SLOT_COUNTS[cat];
     const block = document.createElement('div');
     block.className = 'gal-cat-block';
     block.innerHTML = `
       <div class="gal-cat-head">
         <h3><i class="fas fa-folder" style="color:var(--gold);font-size:.8rem;"></i> ${GALLERY_LABELS[cat]}</h3>
         <div style="display:flex;align-items:center;gap:.7rem;">
-          <span class="count" data-count-for="${cat}">0 photos</span>
+          <span class="count" data-count-for="${cat}">${total} photo${total===1?'':'s'}</span>
           <i class="fas fa-chevron-down chev"></i>
         </div>
       </div>
       <div class="gal-cat-body">
+        <p class="hint" style="margin-bottom:.9rem;">Hover any photo and click "Replace" to swap it for a new one. Photos you haven't replaced will stay exactly as they are on your website now.</p>
         <div class="gal-photo-grid" data-grid-for="${cat}"></div>
-        <label class="add-photo-btn">
-          <i class="fas fa-plus"></i> Add Photo
-          <input type="file" accept="image/*" multiple data-add-for="${cat}">
-        </label>
       </div>
     `;
     wrap.appendChild(block);
 
     block.querySelector('.gal-cat-head').addEventListener('click', () => {
       block.classList.toggle('open');
-    });
-
-    const addInput = block.querySelector(`input[data-add-for="${cat}"]`);
-    addInput.addEventListener('click', e => e.stopPropagation());
-    addInput.addEventListener('change', async () => {
-      const files = Array.from(addInput.files);
-      let added = 0, failed = 0;
-      for (const file of files){
-        try {
-          const dataUrl = await readFileAsDataURL(file);
-          state.gallery[cat].push(dataUrl);
-          added++;
-        } catch(e){ failed++; }
-      }
-      renderGalleryCategory(cat);
-      if (added) markDirty();
-      if (failed) showToast(`${failed} photo(s) couldn't be added — try JPG or PNG under 6MB.`, true);
-      else if (added) showToast(`Added ${added} photo${added>1?'s':''} to ${GALLERY_LABELS[cat]}.`);
-      addInput.value = '';
     });
   });
   Object.keys(GALLERY_LABELS).forEach(renderGalleryCategory);
@@ -744,18 +808,61 @@ function renderGalleryCategory(cat){
   const countEl = document.querySelector(`[data-count-for="${cat}"]`);
   if (!grid) return;
   grid.innerHTML = '';
-  const photos = state.gallery[cat];
-  countEl.textContent = photos.length + ' photo' + (photos.length === 1 ? '' : 's');
-  photos.forEach((dataUrl, idx) => {
+  const slots = state.gallery[cat];
+  const replacedCount = slots.filter(s => s.replaced).length;
+  countEl.textContent = replacedCount > 0
+    ? `${slots.length} photos (${replacedCount} replaced)`
+    : `${slots.length} photos`;
+
+  slots.forEach((slot, idx) => {
     const item = document.createElement('div');
     item.className = 'gal-photo';
-    item.innerHTML = `<img src="${dataUrl}"><button class="remove-btn" type="button"><i class="fas fa-times"></i></button>`;
-    item.querySelector('.remove-btn').addEventListener('click', () => {
-      state.gallery[cat].splice(idx, 1);
-      renderGalleryCategory(cat);
-      markDirty();
-    });
+    const displaySrc = slot.replaced || slot.src;
+    const inputId = `gal-${cat}-${idx}`;
+
+    if (displaySrc){
+      item.innerHTML = `
+        <img src="${displaySrc}" alt="${GALLERY_LABELS[cat]} photo ${idx+1}">
+        <label class="gal-replace-label" for="${inputId}">
+          <i class="fas fa-camera-rotate"></i> Replace
+        </label>
+        <input type="file" id="${inputId}" accept="image/*" style="display:none">
+        ${slot.replaced ? `<button class="remove-btn" type="button" title="Undo replacement" style="left:.35rem;right:auto;"><i class="fas fa-rotate-left"></i></button>` : ''}
+      `;
+    } else {
+      item.innerHTML = `
+        <label class="gal-empty-slot" for="${inputId}">
+          <i class="fas fa-cloud-arrow-up"></i><span>Add photo ${idx+1}</span>
+        </label>
+        <input type="file" id="${inputId}" accept="image/*" style="display:none">
+      `;
+    }
     grid.appendChild(item);
+
+    const fileInput = item.querySelector('input[type=file]');
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      try {
+        const dataUrl = await readFileAsDataURL(file);
+        slot.replaced = dataUrl;
+        renderGalleryCategory(cat);
+        markDirty();
+      } catch(err){
+        showToast(err === 'too large' ? 'That image is too large — please use one under 6MB.' : 'Could not load that image. Try a JPG or PNG.', true);
+      }
+      fileInput.value = '';
+    });
+
+    const undoBtn = item.querySelector('.remove-btn');
+    if (undoBtn){
+      undoBtn.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        slot.replaced = null;
+        renderGalleryCategory(cat);
+        markDirty();
+      });
+    }
   });
 }
 buildGalleryUI();
@@ -830,7 +937,12 @@ document.getElementById('download-btn').addEventListener('click', () => {
       directorPhoto: state.about.directorPhoto,
       photoStrip: [...state.about.strip]
     },
-    gallery: { ...state.gallery },
+    gallery: Object.fromEntries(
+      Object.entries(state.gallery).map(([cat, slots]) => [
+        cat,
+        slots.map(slot => slot.replaced || slot.src).filter(Boolean)
+      ])
+    ),
     global: {
       address: state.global.address,
       phones: state.global.phones.filter(p => p && p.trim() !== ''),
