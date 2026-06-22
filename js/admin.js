@@ -1,169 +1,162 @@
-// ==========================================
-// CONFIGURATION (CHANGE THESE TO YOUR GITHUB DETAILS)
-// ==========================================
-const GITHUB_USERNAME = "Jessyfranky"; // e.g. "destinyfield"
-const REPO_NAME = "school-website";             // e.g. "school-website"
-const FILE_PATH = "content.json";
-const BRANCH = "main"; // Or "master"
-
-const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`;
-
-// State
-let siteData = {};
-let fileSha = "";
-let currentToken = "";
-
-// DOM Elements
-const authForm = document.getElementById('auth-form');
-const authView = document.getElementById('auth-view');
-const dashboardView = document.getElementById('dashboard-view');
-const saveBtn = document.getElementById('save-to-github');
-const statusText = document.getElementById('save-status');
-
-// Handle Authentication
-authForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  currentToken = document.getElementById('github-token').value.trim();
+document.addEventListener('DOMContentLoaded', async () => {
   
-  // Test token by trying to fetch the JSON file
-  try {
-    const res = await fetch(API_URL, {
-      headers: { "Authorization": `token ${currentToken}` }
+  // 1. TABS LOGIC
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const sections = document.querySelectorAll('.admin-section');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('active');
     });
-    
-    if (res.ok) {
-      const data = await res.json();
-      fileSha = data.sha;
-      // Decode Base64 content from GitHub
-      siteData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-      
-      populateForms();
-      
-      authView.classList.add('hidden');
-      dashboardView.classList.remove('hidden');
-    }  else {
-      const errorData = await res.json();
-      alert("GitHub Error: " + errorData.message);
-      console.log(errorData);
-    }
-  } catch (error) {
-    alert("Connection error: " + error.message);
-  }
-});
-
-// Tab Switching
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.dashboard-panel').forEach(p => p.classList.remove('active-panel'));
-    
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.target).classList.add('active-panel');
   });
-});
 
-// Populate HTML Forms with Data
-function populateForms() {
-  // Global
-  document.getElementById('g-address').value = siteData.global.address || '';
-  document.getElementById('g-email').value = siteData.global.email || '';
-  document.getElementById('g-facebook').value = siteData.global.facebook || '';
-  document.getElementById('g-hours').value = siteData.global.hours || '';
-  document.getElementById('g-phones').value = siteData.global.phones.join(', ');
+  // 2. LOAD EXISTING DATA
+  let cmsData = {
+    home: { welcomeImages: ["", "", ""] },
+    about: { directorImage: "", photoStrip: ["", "", "", ""] },
+    global: { address: "", phones: ["", "", ""], email: "", facebook: "", instagram: "", tiktok: "" },
+    gallery: []
+  };
 
+  try {
+    const res = await fetch(`content.json?t=${new Date().getTime()}`);
+    if (res.ok) {
+      const fetchedData = await res.json();
+      cmsData = { ...cmsData, ...fetchedData }; 
+    }
+  } catch (e) {
+    console.log("No existing content.json found. Starting fresh.");
+  }
+
+  // 3. POPULATE INPUT FIELDS
   // Home
-  document.getElementById('h-years').value = siteData.home.metrics.years;
-  document.getElementById('h-scholars').value = siteData.home.metrics.scholars;
-  document.getElementById('h-commit').value = siteData.home.metrics.commitment;
-  document.getElementById('h-values').value = siteData.home.metrics.values;
-  document.getElementById('h-title').value = siteData.home.heroTitle;
-  document.getElementById('h-img1').value = siteData.home.heroImages[0] || '';
+  document.getElementById('home-img-1').value = cmsData.home.welcomeImages[0] || "";
+  document.getElementById('home-img-2').value = cmsData.home.welcomeImages[1] || "";
+  document.getElementById('home-img-3').value = cmsData.home.welcomeImages[2] || "";
 
   // About
-  document.getElementById('a-vision').value = siteData.about.vision;
-  document.getElementById('a-mission').value = siteData.about.mission;
-  document.getElementById('a-name').value = siteData.about.directorName;
-  document.getElementById('a-title').value = siteData.about.directorTitle;
-  document.getElementById('a-message').value = siteData.about.directorMessage;
-  document.getElementById('a-photo').value = siteData.about.aboutImage;
+  document.getElementById('about-director').value = cmsData.about.directorImage || "";
+  if (cmsData.about.photoStrip && cmsData.about.photoStrip.length >= 4) {
+    document.getElementById('strip-1').value = cmsData.about.photoStrip[0] || "";
+    document.getElementById('strip-2').value = cmsData.about.photoStrip[1] || "";
+    document.getElementById('strip-3').value = cmsData.about.photoStrip[2] || "";
+    document.getElementById('strip-4').value = cmsData.about.photoStrip[3] || "";
+  }
 
-  // Admissions
-  document.getElementById('ad-intro').value = siteData.admissions.introText;
+  // Contact
+  document.getElementById('contact-address').value = cmsData.global.address || "";
+  if (cmsData.global.phones && cmsData.global.phones.length >= 3) {
+    document.getElementById('phone-1').value = cmsData.global.phones[0] || "";
+    document.getElementById('phone-2').value = cmsData.global.phones[1] || "";
+    document.getElementById('phone-3').value = cmsData.global.phones[2] || "";
+  }
+  document.getElementById('contact-email').value = cmsData.global.email || "";
+  document.getElementById('contact-fb').value = cmsData.global.facebook || "";
+  document.getElementById('contact-ig').value = cmsData.global.instagram || "";
+  document.getElementById('contact-tt').value = cmsData.global.tiktok || "";
 
-  // Raw JSON (News, Gallery, Docs)
-  // We stringify just the arrays so they can be edited freely
-  const rawData = {
-    news: siteData.news,
-    gallery: siteData.gallery,
-    documents: siteData.admissions.documents
-  };
-  document.getElementById('raw-json-editor').value = JSON.stringify(rawData, null, 2);
-}
+ // 4. GALLERY MANAGER (105 Fixed Replace-Only Slots)
+  const galleryList = document.getElementById('gallery-list');
+  galleryList.innerHTML = ''; 
 
-// Gather Data & Save to GitHub
-saveBtn.addEventListener('click', async () => {
-  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-  
-  try {
-    // 1. Gather all inputs back into the JSON object
-    siteData.global.address = document.getElementById('g-address').value;
-    siteData.global.email = document.getElementById('g-email').value;
-    siteData.global.facebook = document.getElementById('g-facebook').value;
-    siteData.global.hours = document.getElementById('g-hours').value;
-    siteData.global.phones = document.getElementById('g-phones').value.split(',').map(s => s.trim());
+  const MAX_SLOTS = 105; // Locked to your exact total picture count
 
-    siteData.home.metrics.years = parseInt(document.getElementById('h-years').value);
-    siteData.home.metrics.scholars = parseInt(document.getElementById('h-scholars').value);
-    siteData.home.metrics.commitment = parseInt(document.getElementById('h-commit').value);
-    siteData.home.metrics.values = parseInt(document.getElementById('h-values').value);
-    siteData.home.heroTitle = document.getElementById('h-title').value;
-    siteData.home.heroImages[0] = document.getElementById('h-img1').value;
+  for (let i = 0; i < MAX_SLOTS; i++) {
+    // If a photo exists in the JSON, load it. Otherwise, leave it blank.
+    const item = (cmsData.gallery && cmsData.gallery[i]) ? cmsData.gallery[i] : { image: "", category: "environment", caption: "" };
+    
+    const row = document.createElement('div');
+    row.className = 'gallery-row';
+    // 4 Columns: Badge, Image Path, Category, Caption
+    row.style.gridTemplateColumns = '70px 2fr 1fr 1fr'; 
+    row.innerHTML = `
+      <div class="slot-badge">Slot ${i + 1}</div>
+      <div class="form-group">
+        <label>Image Path</label>
+        <input type="text" class="gal-img" placeholder="img/pic.jpg" value="${item.image}">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select class="gal-cat">
+          <option value="environment" ${item.category === 'environment' ? 'selected' : ''}>School Environment</option>
+          <option value="advert" ${item.category === 'advert' ? 'selected' : ''}>Advert Shows</option>
+          <option value="colour" ${item.category === 'colour' ? 'selected' : ''}>Colour Day</option>
+          <option value="grandparents" ${item.category === 'grandparents' ? 'selected' : ''}>Grandparents Day</option>
+          <option value="classroom" ${item.category === 'classroom' ? 'selected' : ''}>Classroom</option>
+          <option value="sports" ${item.category === 'sports' ? 'selected' : ''}>Inter-House Sports</option>
+          <option value="homeec" ${item.category === 'homeec' ? 'selected' : ''}>Home Economics</option>
+          <option value="xmas" ${item.category === 'xmas' ? 'selected' : ''}>X-Mas Show</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Caption</label>
+        <input type="text" class="gal-cap" placeholder="Optional" value="${item.caption || ''}">
+      </div>
+    `;
+    galleryList.appendChild(row);
+  }
 
-    siteData.about.vision = document.getElementById('a-vision').value;
-    siteData.about.mission = document.getElementById('a-mission').value;
-    siteData.about.directorName = document.getElementById('a-name').value;
-    siteData.about.directorTitle = document.getElementById('a-title').value;
-    siteData.about.directorMessage = document.getElementById('a-message').value;
-    siteData.about.aboutImage = document.getElementById('a-photo').value;
+  // 5. SAVE & DOWNLOAD GENERATOR
+  document.getElementById('save-btn').addEventListener('click', () => {
+    
+    // Gather Home
+    cmsData.home.welcomeImages = [
+      document.getElementById('home-img-1').value.trim(),
+      document.getElementById('home-img-2').value.trim(),
+      document.getElementById('home-img-3').value.trim()
+    ];
 
-    siteData.admissions.introText = document.getElementById('ad-intro').value;
+    // Gather About
+    cmsData.about.directorImage = document.getElementById('about-director').value.trim();
+    cmsData.about.photoStrip = [
+      document.getElementById('strip-1').value.trim(),
+      document.getElementById('strip-2').value.trim(),
+      document.getElementById('strip-3').value.trim(),
+      document.getElementById('strip-4').value.trim()
+    ];
 
-    // Parse the advanced JSON box
-    const parsedRaw = JSON.parse(document.getElementById('raw-json-editor').value);
-    siteData.news = parsedRaw.news;
-    siteData.gallery = parsedRaw.gallery;
-    siteData.admissions.documents = parsedRaw.documents;
+    // Gather Contact
+    cmsData.global.address = document.getElementById('contact-address').value.trim();
+    cmsData.global.phones = [
+      document.getElementById('phone-1').value.trim(),
+      document.getElementById('phone-2').value.trim(),
+      document.getElementById('phone-3').value.trim()
+    ];
+    cmsData.global.email = document.getElementById('contact-email').value.trim();
+    cmsData.global.facebook = document.getElementById('contact-fb').value.trim();
+    cmsData.global.instagram = document.getElementById('contact-ig').value.trim();
+    cmsData.global.tiktok = document.getElementById('contact-tt').value.trim();
 
-    // 2. Encode for GitHub
-    const encodedContent = btoa(unescape(encodeURIComponent(JSON.stringify(siteData, null, 2))));
-
-    // 3. PUT Request to Overwrite
-    const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`, {
-      method: "PUT",
-      headers: {
-        "Authorization": `token ${currentToken}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: "Admin CMS: Content update",
-        content: encodedContent,
-        sha: fileSha,
-        branch: BRANCH
-      })
+    // Gather Gallery (Only save slots that have an image URL so blank slots don't break the frontend layout)
+    cmsData.gallery = [];
+    document.querySelectorAll('.gallery-row').forEach(row => {
+      const img = row.querySelector('.gal-img').value.trim();
+      if (img !== "") {
+        cmsData.gallery.push({
+          image: img,
+          category: row.querySelector('.gal-cat').value,
+          caption: row.querySelector('.gal-cap').value.trim()
+        });
+      }
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      fileSha = data.content.sha; // Update SHA for future saves
-      saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
-      statusText.innerHTML = "Vercel is rebuilding your site now. Wait 30 seconds.";
-      setTimeout(() => { saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save & Publish'; }, 3000);
-    } else {
-      throw new Error("GitHub API rejected the save.");
-    }
+    // Generate JSON & trigger download
+    const jsonString = JSON.stringify(cmsData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
     
-  } catch (err) {
-    alert("Save Failed. Ensure JSON in Advanced tab is valid. Error: " + err.message);
-    saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Save & Publish';
-  }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "content.json"; 
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert("Updates saved! Replace the old content.json in your website folder with this new downloaded file.");
+  });
 });

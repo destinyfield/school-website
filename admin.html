@@ -3,98 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Destinyfield Admin</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/admin.css">
+  <title>Admin Portal - Destinyfield</title>
+  <link rel="icon" type="image/jpeg" href="img/logo.jpeg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
 
-  <div id="auth-view" class="auth-wrapper">
-    <div class="auth-card">
-      <i class="fas fa-lock auth-logo"></i>
-      <h2>Destinyfield Admin</h2>
-      <p>Enter your GitHub Personal Access Token to edit the site.</p>
-      <form id="auth-form">
-        <input type="password" id="github-token" required placeholder="ghp_xxxxxxxxxxxxxxxxx">
-        <button type="submit" class="btn-primary">Unlock Dashboard</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="dashboard-view" class="dashboard-wrapper hidden">
+  <div class="admin-wrapper">
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-brand">Destinyfield CMS</div>
-      <nav class="sidebar-menu">
-        <button class="nav-btn active" data-target="panel-global"><i class="fas fa-globe"></i> Global & Contact</button>
-        <button class="nav-btn" data-target="panel-home"><i class="fas fa-home"></i> Home Page</button>
-        <button class="nav-btn" data-target="panel-about"><i class="fas fa-info-circle"></i> About Us</button>
-        <button class="nav-btn" data-target="panel-admissions"><i class="fas fa-file-alt"></i> Admissions</button>
-        <button class="nav-btn" data-target="panel-json"><i class="fas fa-code"></i> Advanced (Raw JSON)</button>
+      <div class="brand">
+        <!-- Make sure you have your logo in the img folder! -->
+        <img src="img/logo.jpeg" alt="Logo" onerror="this.src=''"> 
+        <div>
+          <h2>Destinyfield</h2>
+          <p>Admin Portal</p>
+        </div>
+      </div>
+      <nav class="admin-nav">
+        <button class="tab-btn active" data-target="tab-home"><i class="fas fa-home"></i> Home Pictures</button>
+        <button class="tab-btn" data-target="tab-about"><i class="fas fa-info-circle"></i> About Pictures</button>
+        <button class="tab-btn" data-target="tab-contact"><i class="fas fa-address-book"></i> Contact Info</button>
+        <button class="tab-btn" data-target="tab-gallery"><i class="fas fa-images"></i> Gallery</button>
       </nav>
-      <div style="padding: 20px;">
-        <button id="save-to-github" class="btn-save"><i class="fas fa-cloud-upload-alt"></i> Save & Publish</button>
-        <p class="help-text" id="save-status">Vercel will rebuild automatically.</p>
+      <div class="sidebar-footer">
+        <a href="index.html" class="btn-outline"><i class="fas fa-external-link-alt"></i> View Site</a>
       </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main-content">
-      <div class="header-bar">
+      <header class="topbar">
         <h1>Content Manager</h1>
+        <button id="save-btn" class="btn-gold"><i class="fas fa-download"></i> Save & Download Updates</button>
+      </header>
+
+      <div class="content-area">
+        
+        <!-- HOME TAB -->
+        <section id="tab-home" class="admin-section active">
+          <h3>Home Page Welcome Images</h3>
+          <p class="help-text">Update the file paths for the 3 images in the Welcome section (e.g., <code>img/school1.jpg</code>).</p>
+          <div class="form-group">
+            <label>Main Large Image</label>
+            <input type="text" id="home-img-1" placeholder="img/...">
+          </div>
+          <div class="form-group">
+            <label>Accent Image 1 (Top Right)</label>
+            <input type="text" id="home-img-2" placeholder="img/...">
+          </div>
+          <div class="form-group">
+            <label>Accent Image 2 (Bottom Right)</label>
+            <input type="text" id="home-img-3" placeholder="img/...">
+          </div>
+        </section>
+
+        <!-- ABOUT TAB -->
+        <section id="tab-about" class="admin-section">
+          <h3>About Us Pictures</h3>
+          <div class="form-group">
+            <label>Director's Photo</label>
+            <input type="text" id="about-director" placeholder="img/director.jpg">
+          </div>
+          <hr>
+          <h3>Photo Strip Images</h3>
+          <p class="help-text">The 4 images displayed in a row on the About page.</p>
+          <div class="grid-2">
+            <div class="form-group"><label>Strip Image 1</label><input type="text" id="strip-1" placeholder="img/..."></div>
+            <div class="form-group"><label>Strip Image 2</label><input type="text" id="strip-2" placeholder="img/..."></div>
+            <div class="form-group"><label>Strip Image 3</label><input type="text" id="strip-3" placeholder="img/..."></div>
+            <div class="form-group"><label>Strip Image 4</label><input type="text" id="strip-4" placeholder="img/..."></div>
+          </div>
+        </section>
+
+        <!-- CONTACT TAB -->
+        <section id="tab-contact" class="admin-section">
+          <h3>Global Contact Information</h3>
+          <p class="help-text">This will automatically update the Contact Page, Footer, and Map links.</p>
+          <div class="form-group">
+            <label>Physical Address</label>
+            <input type="text" id="contact-address">
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>Phone Number 1</label><input type="text" id="phone-1"></div>
+            <div class="form-group"><label>Phone Number 2</label><input type="text" id="phone-2"></div>
+            <div class="form-group"><label>Phone Number 3</label><input type="text" id="phone-3"></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="contact-email"></div>
+            <div class="form-group"><label>Facebook URL</label><input type="url" id="contact-fb"></div>
+            <div class="form-group"><label>Instagram URL</label><input type="url" id="contact-ig"></div>
+            <div class="form-group"><label>TikTok URL</label><input type="url" id="contact-tt"></div>
+          </div>
+        </section>
+
+        <!-- GALLERY TAB -->
+      <!-- GALLERY TAB -->
+        <section id="tab-gallery" class="admin-section">
+          <div class="flex-between">
+            <div>
+              <h3>Gallery Manager (105 Slots)</h3>
+              <p class="help-text">Replace the image paths below to update your gallery. If a slot is left blank, it will be automatically hidden from the website.</p>
+            </div>
+          </div>
+          
+          <div id="gallery-list" class="gallery-list">
+            <!-- JavaScript will populate all 105 fixed slots here -->
+          </div>
+        </section>
+
       </div>
-
-      <section id="panel-global" class="dashboard-panel active-panel">
-        <h2>Global Contact Details</h2>
-        <div class="admin-card form-grid">
-          <div class="form-group"><label>Address</label><input type="text" id="g-address"></div>
-          <div class="form-group"><label>Email</label><input type="email" id="g-email"></div>
-          <div class="form-group"><label>Facebook Link</label><input type="text" id="g-facebook"></div>
-          <div class="form-group"><label>School Hours</label><input type="text" id="g-hours"></div>
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Phone Numbers (Comma separated)</label><input type="text" id="g-phones"></div>
-        </div>
-      </section>
-
-      <section id="panel-home" class="dashboard-panel">
-        <h2>Home Page Stats & Hero</h2>
-        <div class="admin-card form-grid">
-          <div class="form-group"><label>Years of Excellence</label><input type="number" id="h-years"></div>
-          <div class="form-group"><label>Scholars Produced</label><input type="number" id="h-scholars"></div>
-          <div class="form-group"><label>Commitment (%)</label><input type="number" id="h-commit"></div>
-          <div class="form-group"><label>Core Values</label><input type="number" id="h-values"></div>
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Hero Title</label><input type="text" id="h-title"></div>
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Hero Image 1 URL</label><input type="text" id="h-img1"></div>
-        </div>
-      </section>
-
-      <section id="panel-about" class="dashboard-panel">
-        <h2>About Us & Director</h2>
-        <div class="admin-card form-grid">
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Vision Statement</label><textarea id="a-vision" rows="2"></textarea></div>
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Mission Statement</label><textarea id="a-mission" rows="2"></textarea></div>
-          <div class="form-group"><label>Director's Name</label><input type="text" id="a-name"></div>
-          <div class="form-group"><label>Director's Title</label><input type="text" id="a-title"></div>
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Director's Message</label><textarea id="a-message" rows="4"></textarea></div>
-          <div class="form-group"><label>Director Photo URL</label><input type="text" id="a-photo"></div>
-        </div>
-      </section>
-
-      <section id="panel-admissions" class="dashboard-panel">
-        <h2>Admissions Intro</h2>
-        <div class="admin-card form-grid">
-          <div class="form-group" style="grid-column: 1 / -1;"><label>Introductory Text</label><textarea id="ad-intro" rows="3"></textarea></div>
-        </div>
-      </section>
-
-      <section id="panel-json" class="dashboard-panel">
-        <h2>Advanced Editor (News, Gallery, Docs)</h2>
-        <p class="help-text" style="margin-bottom: 15px;">Because arrays can grow infinitely, manage your News, Gallery, and Document links directly here. Ensure valid JSON.</p>
-        <div class="admin-card">
-          <textarea id="raw-json-editor" rows="25" style="font-family: monospace; font-size: 14px; width: 100%;"></textarea>
-        </div>
-      </section>
-
     </main>
   </div>
 
-  <script src="/js/admin.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>
