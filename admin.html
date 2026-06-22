@@ -40,7 +40,23 @@
         <button id="save-btn" class="btn-gold"><i class="fas fa-download"></i> Save & Download Updates</button>
       </header>
 
-      <div class="content-area">
+    <div class="content-area">
+        
+        <!-- INSTRUCTION BANNER (Always visible at the top) -->
+        <div class="admin-instructions reveal">
+          <div class="instruction-icon"><i class="fas fa-lightbulb"></i></div>
+          <div class="instruction-text">
+            <h3>How to Update the Website</h3>
+            <ol>
+              <li><strong>Upload your picture:</strong> Go to a free image host like <a href="https://postimages.org/" target="_blank">Postimages.org</a>, upload your photo, and copy the <strong>"Direct Link"</strong> (it should end in .jpg or .png).</li>
+              <li><strong>Paste the link:</strong> Paste that link into the Image Path box below. <em>(Look for the tiny picture to appear next to the box—if it's blank, the link is broken!)</em></li>
+              <li><strong>Save changes:</strong> Click the gold <strong>Save & Download Updates</strong> button at the top right. A file named <code>content.json</code> will download to your computer.</li>
+              <li><strong>Publish to the internet:</strong> Go to the school's GitHub page, click <strong>Add file > Upload files</strong>, and drag your new <code>content.json</code> file there to replace the old one. Click <strong>Commit changes</strong>.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- HOME TAB ... (Rest of your code continues here) -->
         
         <!-- HOME TAB -->
         <section id="tab-home" class="admin-section active">
