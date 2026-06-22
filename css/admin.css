@@ -97,3 +97,53 @@ button { cursor: pointer; border-radius: 6px; font-weight: 500; transition: 0.2s
   justify-content: center;
   margin-bottom: 2px;
 }
+
+/* ==========================================
+   ADMIN INSTRUCTION BANNER
+========================================== */
+.admin-instructions {
+  background: rgba(201, 168, 76, 0.1); /* Soft gold background */
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.instruction-icon {
+  background: var(--gold);
+  color: var(--navy);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.instruction-text h3 {
+  color: var(--navy);
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+}
+
+.instruction-text ol {
+  margin-left: 1.2rem;
+  color: var(--text);
+}
+
+.instruction-text li {
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.instruction-text a {
+  color: #2563EB;
+  text-decoration: underline;
+  font-weight: 500;
+}
