@@ -1,0 +1,37 @@
+{
+  "home": {
+    "welcomeImages": [
+      "",
+      "",
+      ""
+    ]
+  },
+  "about": {
+    "directorImage": "",
+    "photoStrip": [
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  "global": {
+    "address": "",
+    "phones": [
+      "",
+      "",
+      ""
+    ],
+    "email": "",
+    "facebook": "",
+    "instagram": "",
+    "tiktok": ""
+  },
+  "gallery": [
+    {
+      "image": "img/pic 1.jpg",
+      "category": "advert",
+      "caption": ""
+    }
+  ]
+}
