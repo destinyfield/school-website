@@ -432,7 +432,7 @@ button{cursor:pointer;font-family:inherit;}
 
       <div class="banner">
         <i class="fas fa-circle-info"></i>
-        <p>Click "Add Photo" inside any category to upload more pictures. Hover and click the <strong>×</strong> on a photo to remove it.</p>
+        <p>Each category shows the exact number of photos currently on your website. Click any photo and choose "Replace" to swap it for a new one — photos you don't touch stay exactly as they are.</p>
       </div>
 
       <div id="gallery-categories"></div>
@@ -1005,8 +1005,15 @@ document.getElementById('load-json-input').addEventListener('change', async (e) 
       }
     }
     if (data.gallery){
-      Object.keys(GALLERY_LABELS).forEach(cat => {
-        state.gallery[cat] = Array.isArray(data.gallery[cat]) ? data.gallery[cat] : [];
+      Object.keys(GALLERY_SLOT_COUNTS).forEach(cat => {
+        const total = GALLERY_SLOT_COUNTS[cat];
+        const incoming = Array.isArray(data.gallery[cat]) ? data.gallery[cat] : [];
+        state.gallery[cat] = new Array(total).fill(null).map((_, i) => {
+          const val = incoming[i] || null;
+          // base64 data URLs are treated as "replaced", plain paths as the existing/original photo
+          if (val && val.startsWith('data:')) return { src: null, replaced: val, isExisting: false };
+          return { src: val, replaced: null, isExisting: !!val };
+        });
       });
     }
     if (data.global){
