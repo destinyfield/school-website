@@ -15,7 +15,7 @@ async function loadCMSContent() {
     const res = await fetch(`content.json?t=${new Date().getTime()}`);
     if (!res.ok) return;
     const data = await res.json();
-
+ 
     const setImg = (selector, val) => {
       if (!val) return;
       document.querySelectorAll(selector).forEach(el => { el.src = val; });
@@ -24,7 +24,7 @@ async function loadCMSContent() {
       if (val === undefined || val === null || val === '') return;
       document.querySelectorAll(selector).forEach(el => { el.textContent = val; });
     };
-
+ 
     /* ── HOME PAGE IMAGES ── */
     if (data.home && data.home.images) {
       const img = data.home.images;
@@ -35,7 +35,7 @@ async function loadCMSContent() {
       setImg('.img-card.accent-img-1 img', img.welcomeAccent1);
       setImg('.img-card.accent-img-2 img', img.welcomeAccent2);
     }
-
+ 
     /* ── HOME PAGE METRICS ── */
     if (data.home && data.home.metrics) {
       const stats = document.querySelectorAll('.stat-num');
@@ -47,7 +47,7 @@ async function loadCMSContent() {
         if (m.values)      stats[3].dataset.count = m.values;
       }
     }
-
+ 
     /* ── ABOUT US IMAGES ── */
     if (data.about) {
       setImg('.director-photo-frame img', data.about.directorPhoto);
@@ -58,13 +58,24 @@ async function loadCMSContent() {
         });
       }
     }
-
+ 
     /* ── GALLERY PHOTOS ── */
     if (data.gallery) {
       const galGrid = document.getElementById('gal-grid');
+      const CMS_GALLERY_LABELS = {
+        environment: 'School Enviromnent',
+        advert: 'Advert Show',
+        colour: "Colour Day",
+        grandparents: 'Grandparents Day',
+        classroom: 'Classroom',
+        sports: 'Inter-House Sports',
+        homeec: 'Home Economics Day',
+        xmas: 'X-mas Show'
+      };
       if (galGrid) {
         Object.entries(data.gallery).forEach(([cat, photos]) => {
           if (!Array.isArray(photos) || photos.length === 0) return;
+          const label = CMS_GALLERY_LABELS[cat] || cat;
           // Remove existing items in this category that came from the static HTML
           galGrid.querySelectorAll(`.gal-item[data-cat="${cat}"]`).forEach(el => el.remove());
           // Re-add from content.json
@@ -72,23 +83,23 @@ async function loadCMSContent() {
             const item = document.createElement('div');
             item.className = 'gal-item';
             item.dataset.cat = cat;
-            item.dataset.label = cat;
+            item.dataset.label = label;
             item.innerHTML = `
-              <img src="${src}" alt="${cat}" loading="lazy" />
+              <img src="${src}" alt="${label}" loading="lazy" />
               <div class="gal-overlay">
                 <button class="gal-expand"><i class="fas fa-expand-alt"></i></button>
-                <p>${cat}</p>
+                <p>${label}</p>
               </div>`;
             galGrid.appendChild(item);
           });
         });
       }
     }
-
+ 
     /* ── GLOBAL CONTACT INFO ── */
     if (data.global) {
       const g = data.global;
-
+ 
       // Address — every element showing the school address
       if (g.address) {
         document.querySelectorAll('.map-address-badge span, .info-card p, .footer-contact-item p, .news-contact-strip span')
@@ -101,7 +112,7 @@ async function loadCMSContent() {
             }
           });
       }
-
+ 
       // Phone numbers — replace tel: links in order of appearance
       if (g.phones && g.phones.length) {
         const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
@@ -120,7 +131,7 @@ async function loadCMSContent() {
           }
         });
       }
-
+ 
       // Email
       if (g.email) {
         document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
@@ -128,7 +139,7 @@ async function loadCMSContent() {
           if (link.children.length === 0) link.textContent = g.email;
         });
       }
-
+ 
       // Office hours
       if (g.hours) {
         document.querySelectorAll('.info-card').forEach(card => {
@@ -139,12 +150,12 @@ async function loadCMSContent() {
           }
         });
       }
-
+ 
       // Social links
       if (g.facebook) document.querySelectorAll('a[href*="facebook.com"]').forEach(a => a.href = g.facebook);
       if (g.instagram) document.querySelectorAll('a[href*="instagram.com"]').forEach(a => a.href = g.instagram);
       if (g.tiktok) document.querySelectorAll('a[href*="tiktok.com"]').forEach(a => a.href = g.tiktok);
-
+ 
       // Map embed
       if (g.mapEmbed) {
         document.querySelectorAll('.map-wrapper iframe').forEach(frame => {
@@ -152,11 +163,12 @@ async function loadCMSContent() {
         });
       }
     }
-
+ 
   } catch (err) {
     console.error("CMS Load Error:", err);
   }
 }
+ 
 // ==========================================
 // 2. CORE APPLICATION LOGIC
 // ==========================================
