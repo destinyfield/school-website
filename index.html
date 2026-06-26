@@ -424,12 +424,15 @@
           <div class="step-card">
             <div class="step-num">1</div>
             <div class="step-content">
-              <h3>Download Application Form</h3>
+       <h3>Download Application Form</h3>
               <p>Download our official admission form. Fill it out carefully with accurate details about your child.</p>
-              <a href="documents/admission-form.pdf" class="btn btn-gold btn-sm" download>
-                <i class="fas fa-download"></i> Download Admission Form
-              </a>
-            </div>
+              
+              <div class="payment-block" style="margin-top: 15px;">
+                <input type="email" id="parent-email-1" placeholder="Enter your email address" class="pay-email" required style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                <button onclick="payForForm('parent-email-1')" class="btn btn-gold btn-sm" style="width: 100%;">
+                  <i class="fas fa-credit-card"></i> Pay ₦10,000 & Download
+                </button>
+              </div>
           </div>
           <div class="step-connector"><i class="fas fa-chevron-down"></i></div>
           <div class="step-card">
@@ -480,12 +483,19 @@
           <div class="docs-grid">
             <div class="doc-card">
               <div class="doc-icon"><i class="fas fa-file-alt"></i></div>
-              <div class="doc-info">
+             <div class="doc-info">
                 <h3>Admission Form</h3>
                 <p>Official application form for new students. Complete all sections and submit to the admissions office.</p>
-                <div class="doc-meta"><i class="fas fa-file-pdf"></i> PDF Document</div>
+                <div class="doc-meta"><i class="fas fa-file-pdf"></i> ₦10,000 Fee Required</div>
               </div>
-              <a href="documents/admission-form.pdf" class="btn btn-gold" download>
+              
+              <div class="payment-block" style="margin-top: 15px;">
+                <input type="email" id="parent-email-2" placeholder="Enter your email address" class="pay-email" required style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                <button onclick="payForForm('parent-email-2')" class="btn btn-gold" style="width: 100%;">
+                  <i class="fas fa-credit-card"></i> Pay ₦10,000 & Download
+                </button>
+              </div>
+              <a href="img/admission form.pdf" class="btn btn-gold" download>
                 <i class="fas fa-download"></i> Download Form
               </a>
             </div>
@@ -496,7 +506,7 @@
                 <p>Parental/guardian consent document required alongside the admission form. Must be signed and submitted.</p>
                 <div class="doc-meta"><i class="fas fa-file-pdf"></i> PDF Document</div>
               </div>
-              <a href="documents/letter-of-consent.pdf" class="btn btn-outline" download>
+              <a href="./img/ADMISSION DOCUMENTS.doc" class="btn btn-outline" download>
                 <i class="fas fa-download"></i> Download Consent
               </a>
             </div>
@@ -1755,6 +1765,8 @@
           </div>
         </div>
       </div>
+
+      <script src="https://js.paystack.co/v1/inline.js"></script>
 
   <script src="js/script.js"></script>
 </body>
