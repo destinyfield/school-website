@@ -2763,154 +2763,106 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   line-height: 1.6;
 }
 
-/* ==========================================
-   ADMISSIONS SECTION RESPONSIVE FIX
-========================================== */
+/* ══════════════════════════════════════════════════
+   ADMISSIONS PAGE — RESPONSIVE PATCH
+   Append this to the end of your main stylesheet.
+   Fixes: cramped step cards, payment inputs zooming
+   on iOS, doc-card button stacking, contact box width
+   on mid-size screens.
+══════════════════════════════════════════════════ */
 
-/* --- 1. ADMISSION INTRO (Side-by-side on desktop, stacked on mobile) --- */
-.admission-intro {
-  display: flex;
-  flex-direction: column; /* Stacks on mobile */
-  gap: 2rem;
+/* Prevent iOS auto-zoom on input focus (anything <16px triggers it) */
+.pay-email {
+  font-size: 16px !important;
 }
 
-.admission-contact-box {
-  background: rgba(201, 168, 76, 0.1);
-  border: 1px solid var(--gold);
-  padding: 1.5rem;
-  border-radius: 8px;
+/* Doc card: avoid showing two redundant CTAs (payment block + plain download link)
+   stacked with no spacing on small screens */
+.doc-card .payment-block + a.btn {
+  margin-top: 0.5rem;
 }
 
-@media (min-width: 768px) {
+/* ── Tablet (≤1024px): tighten the intro layout earlier than 768px ── */
+@media (max-width: 1024px) {
   .admission-intro {
-    flex-direction: row; /* Side-by-side on tablets/desktop */
-    align-items: flex-start;
-  }
-  .intro-text {
-    flex: 2;
-    padding-right: 2rem;
+    grid-template-columns: 1fr;
   }
   .admission-contact-box {
-    flex: 1;
+    min-width: 0;
+    width: 100%;
   }
 }
 
-/* --- 2. STEPS GRID (Vertical Timeline Style) --- */
-.steps-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-width: 700px;
-  margin: 0 auto; /* Centers the steps on the page */
-}
-
-.step-card {
-  display: flex;
-  flex-direction: column; /* Stack contents on very small screens */
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
-  border-radius: 8px;
-  gap: 1rem;
-  text-align: center;
-  align-items: center;
-}
-
-.step-num {
-  background: var(--gold);
-  color: var(--navy);
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.step-connector {
-  text-align: center;
-  color: var(--gold);
-  font-size: 1.5rem;
-  margin: 0.5rem 0;
-}
-
-@media (min-width: 600px) {
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  /* Step cards: drop the side-by-side number+content grid so text
+     never gets squeezed next to the circle on narrow viewports */
   .step-card {
-    flex-direction: row; /* Icon left, text right on bigger screens */
-    text-align: left;
-    align-items: flex-start;
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  .step-num {
+    margin: 0 auto;
+  }
+  .step-card:hover {
+    transform: none; /* translateX(4px) looks odd full-width on mobile */
+  }
+  .step-content p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Doc cards: center icon + content, full-width buttons */
+  .doc-card {
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .doc-card .btn,
+  .doc-card .payment-block {
+    width: 100%;
+  }
+
+  /* Expect grid: 2 columns instead of forcing a single narrow column */
+  .expect-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  .expect-item {
+    padding: 1.4rem 1rem;
   }
 }
 
-/* --- 3. DOCUMENTS DOWNLOAD SECTION --- */
-.docs-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* 1 column on mobile */
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
+/* ── Small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .admission-contact-box {
+    padding: 1.4rem;
+  }
+  .contact-line {
+    font-size: var(--sz-sm);
+    justify-content: center;
+  }
 
-.doc-card {
-  border: 1px solid var(--border);
-  padding: 2rem;
-  border-radius: 8px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .step-card {
+    padding: 1.2rem;
+  }
+  .step-num {
+    width: 44px;
+    height: 44px;
+    font-size: var(--sz-md);
+  }
 
-.doc-icon {
-  font-size: 2.5rem;
-  color: var(--gold);
-  margin-bottom: 1rem;
-}
-
-@media (min-width: 768px) {
   .docs-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet/desktop */
+    grid-template-columns: 1fr;
   }
-}
 
-/* --- 4. WHAT TO EXPECT GRID --- */
-.expect-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* 1 column on mobile */
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.expect-item {
-  background: var(--bg);
-  padding: 2rem;
-  border-radius: 8px;
-  text-align: center;
-  border: 1px solid var(--border);
-  transition: transform 0.3s ease;
-}
-
-.expect-item i {
-  font-size: 2rem;
-  color: var(--gold);
-  margin-bottom: 1rem;
-}
-
-.expect-item:hover {
-  transform: translateY(-5px);
-  border-color: var(--gold);
-}
-
-@media (min-width: 600px) {
   .expect-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    grid-template-columns: 1fr;
   }
-}
 
-@media (min-width: 900px) {
-  .expect-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 columns on desktops */
+  .pay-email {
+    padding: 10px !important;
   }
 }
