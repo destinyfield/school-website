@@ -2762,3 +2762,155 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-size: 1.05rem;
   line-height: 1.6;
 }
+
+/* ==========================================
+   ADMISSIONS SECTION RESPONSIVE FIX
+========================================== */
+
+/* --- 1. ADMISSION INTRO (Side-by-side on desktop, stacked on mobile) --- */
+.admission-intro {
+  display: flex;
+  flex-direction: column; /* Stacks on mobile */
+  gap: 2rem;
+}
+
+.admission-contact-box {
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid var(--gold);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+  .admission-intro {
+    flex-direction: row; /* Side-by-side on tablets/desktop */
+    align-items: flex-start;
+  }
+  .intro-text {
+    flex: 2;
+    padding-right: 2rem;
+  }
+  .admission-contact-box {
+    flex: 1;
+  }
+}
+
+/* --- 2. STEPS GRID (Vertical Timeline Style) --- */
+.steps-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 700px;
+  margin: 0 auto; /* Centers the steps on the page */
+}
+
+.step-card {
+  display: flex;
+  flex-direction: column; /* Stack contents on very small screens */
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 8px;
+  gap: 1rem;
+  text-align: center;
+  align-items: center;
+}
+
+.step-num {
+  background: var(--gold);
+  color: var(--navy);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.step-connector {
+  text-align: center;
+  color: var(--gold);
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+@media (min-width: 600px) {
+  .step-card {
+    flex-direction: row; /* Icon left, text right on bigger screens */
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+/* --- 3. DOCUMENTS DOWNLOAD SECTION --- */
+.docs-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 column on mobile */
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.doc-card {
+  border: 1px solid var(--border);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.doc-icon {
+  font-size: 2.5rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .docs-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet/desktop */
+  }
+}
+
+/* --- 4. WHAT TO EXPECT GRID --- */
+.expect-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 column on mobile */
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.expect-item {
+  background: var(--bg);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: transform 0.3s ease;
+}
+
+.expect-item i {
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.expect-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+}
+
+@media (min-width: 600px) {
+  .expect-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+  }
+}
+
+@media (min-width: 900px) {
+  .expect-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on desktops */
+  }
+}
